@@ -164,11 +164,7 @@ class Question extends CI_Controller
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     
-    function index()
-    {
-        $temp  = $this->Question->query_recent_count(1);
-        var_dump($temp);
-    }
+
 }
 
 ?>

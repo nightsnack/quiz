@@ -37,7 +37,7 @@ class Course extends CI_Controller
 
     public function query_course()
     {
-        $res = $this->Course->query_course($_SESSION['user_id']);
+        $res = $this->Course->query_course($_SESSION['open_id']);
         echo json_encode($res, JSON_UNESCAPED_UNICODE);
     }
 
@@ -47,7 +47,7 @@ class Course extends CI_Controller
         if ($name) {
             $data = array(
                 'name' => trim($name),
-                'user_id' => $_SESSION['user_id']
+                'user_id' => $_SESSION['open_id']
             );
             if ($this->Course->insert_course($data)) {
                 $data = array(
