@@ -21,8 +21,12 @@ class QuestionModel extends CI_Model
      */
     public function query_question($chapter_id)
     {
-        $this->db->where('chapter_id',$chapter_id);
-        $query = $this->db->get($this->table)->result_array();
+        $this->db->select('a.*,COUNT(*) as sum,SUM(judge) as correct');
+        $this->db->from("$this->table as a");
+        $this->db->where('a.chapter_id',$chapter_id);
+        $this->db->join("Answer as b",'a.id=b.question_id','left');
+        $this->db->group_by('a.id');
+        $query = $this->db->get()->result_array();
         return $query;
     }
     
@@ -74,14 +78,6 @@ class QuestionModel extends CI_Model
         return $this->db->affected_rows();
     }
     
-    public function clear_recent($chapter_id)
-    {
-        $this->db->set('recent_right',0);
-        $this->db->set('recent_all',0);
-        $this->db->where('chapter_id',$chapter_id);
-        $this->db->update($this->table);
-        return $this->db->affected_rows();
-    }
     
     public function query_answer($id)
     {
@@ -89,6 +85,35 @@ class QuestionModel extends CI_Model
         $this->db->where('chapter_id', $id);
         return $this->db->get($this->table)->result_array();
     }
+    
+    function query_last_accesscode($chapter_id)
+    {
+        $this->db->select('accesscode');
+        $this->db->order_by('create_time','DESC');
+        $this->db->where('chapter_id',$chapter_id);
+        $this->db->limit(1);
+        return $this->db->get('Accesscode')->result_array();
+    }
+    
+    public function query_recent_count($chapter_id)
+    {
+        $temp = $this->query_last_accesscode($chapter_id);
+        if(empty($temp)){
+            return array();
+        }else 
+        $accesscode = $temp[0]['accesscode'];
+        $this->db->select('a.id,COUNT(*) as recent_sum,SUM(judge) as recent_correct');
+        $this->db->from("$this->table as a");
+        $this->db->where('a.chapter_id',$chapter_id);
+        $this->db->where('b.accesscode',$accesscode);
+        $this->db->join("Answer as b",'a.id=b.question_id','left');
+        $this->db->group_by('a.id');
+        $query = $this->db->get()->result_array();
+        return $query;
+    }
+    
+    
 }
+
 
 ?>

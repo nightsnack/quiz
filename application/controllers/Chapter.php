@@ -2,24 +2,36 @@
 
 class Chapter extends \CI_Controller
 {
-    private $userid = 'admin';
-    
+    private $open_id = 'admin';
+
     function __construct()
     {
         parent::__construct();
-        $_SESSION['user_id'] = $this->userid;
-        $this->checklogin();
+        $_SESSION['open_id'] = $this->open_id;
         $this->load->model('ChapterModel', 'Chapter');
+        $this->load->model('UserModel','User');
+        $this->checklogin();
     }
     
     private function checklogin()
     {
-        if (! $_SESSION['user_id']) {
+        if (! $_SESSION['open_id']) {
             $data = array(
                 'errno' => 101,
                 'error' => '请先登录'
             );
-            json_encode($data, JSON_UNESCAPED_UNICODE);
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);die();
+        }
+        $student_id = $this->User->query_id($_SESSION['open_id']);
+        if (! empty($student_id)) {
+            $_SESSION['student_id'] = $student_id[0]['student_id'];
+        } else {
+            $data = array(
+                'errno' => 100,
+                'error' => '请先绑定'
+            );
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            die();
         }
     }
     

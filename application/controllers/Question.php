@@ -3,25 +3,37 @@
 class Question extends CI_Controller
 {
 
-    private $userid = 'admin';
+    private $open_id = 'admin';
     private $pictureurl = 'oss.dmsq.com/';
 
     function __construct()
     {
         parent::__construct();
-        $_SESSION['user_id'] = $this->userid;
-        $this->checklogin();
+        $_SESSION['open_id'] = $this->open_id;
         $this->load->model('QuestionModel', 'Question');
+        $this->load->model('UserModel','User');
+        $this->checklogin();
     }
 
     private function checklogin()
     {
-        if (! $_SESSION['user_id']) {
+        if (! $_SESSION['open_id']) {
             $data = array(
                 'errno' => 101,
                 'error' => '请先登录'
             );
-            json_encode($data, JSON_UNESCAPED_UNICODE);
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);die();
+        }
+        $student_id = $this->User->query_id($_SESSION['open_id']);
+        if (! empty($student_id)) {
+            $_SESSION['student_id'] = $student_id[0]['student_id'];
+        } else {
+            $data = array(
+                'errno' => 100,
+                'error' => '请先绑定'
+            );
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            die();
         }
     }
 
@@ -29,17 +41,21 @@ class Question extends CI_Controller
     {
         $chapter_id = $this->input->post('chapter_id');
         $res = $this->Question->query_question($chapter_id);
+        $temp  = $this->Question->query_recent_count($chapter_id);
         for ($i = 0; $i < count($res); $i ++) {
             if ($res[$i]['content_type'])
             {
                 $res[$i]['content'] = $this->pictureurl.$res[$i]['content'];
             }
-            $res[$i]['accuracy'] = $res[$i]['right'] . '/' . $res[$i]['all'];
-            $res[$i]['recent_accuracy'] = $res[$i]['recent_right'] . '/' . $res[$i]['recent_all'];
-            unset($res[$i]['right']);
-            unset($res[$i]['all']);
-            unset($res[$i]['recent_right']);
-            unset($res[$i]['recent_all']);
+            if(!$res[$i]['correct']) $res[$i]['correct'] = 1; // 当存储答题信息的表里没有该题的记录时，要把这个正确人数记为1
+            if (isset($temp[$i])) {
+                $res[$i]['recent_sum'] = $temp[$i]['recent_sum'];
+                $res[$i]['recent_correct'] = $temp[$i]['recent_correct'];
+            } else {
+                $res[$i]['recent_sum'] = 1;
+                $res[$i]['recent_correct'] = 1;
+            }
+            
         }
         $resp['chapter_id'] = $chapter_id; // 给添加问题的时候发请求提供便利
         $resp['res'] = $res;
@@ -148,24 +164,10 @@ class Question extends CI_Controller
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     
-    /**
-     * 清除某章节最近正确率统计
-     */
-    public function clear_recent()
+    function index()
     {
-        $chapter_id = $this->input->post('chapter_id');
-        if($chapter_id){
-            $this->Question->clear_recent($chapter_id);
-            $data = array(
-                'errno' => 0
-            );
-        }else{
-            $data = array(
-                'errno' => 103,
-                'error' => '请将信息填写完整！'
-            );
-        }
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        $temp  = $this->Question->query_recent_count(1);
+        var_dump($temp);
     }
 }
 
