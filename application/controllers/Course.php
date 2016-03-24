@@ -1,18 +1,53 @@
 <?php
+header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Methods:GET, POST,PUT, OPTIONS, DELETE');
+header("Content-type: text/html;charset=utf-8");
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Headers: X-Requested-With');
+header('Access-Control-Allow-Headers: Content-Type');
 
 class Course extends CI_Controller
 {
+
     private $open_id = 'admin';
-    
+
+    private $id;
     function __construct()
     {
+        
         parent::__construct();
         $_SESSION['open_id'] = $this->open_id;
         $this->load->model('CourseModel', 'Course');
-        $this->load->model('UserModel','User');
+        $this->load->model('UserModel', 'User');
         $this->checklogin();
+        
     }
-    
+
+    function index($id='')
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+        $this->id = $id;
+        $this->switchMethod($method);
+    }
+
+    private function switchMethod($method)
+    {
+        switch ($method) {
+            case 'GET':
+                $this->query_course();
+                break;
+            case 'PUT':
+                $this->update_course();
+                break;
+            case 'POST':
+                $this->insert_course();
+                break;
+            case 'DELETE':
+                $this->delete_course();
+                break;
+        }
+    }
+
     private function checklogin()
     {
         if (! $_SESSION['open_id']) {
@@ -20,7 +55,8 @@ class Course extends CI_Controller
                 'errno' => 101,
                 'error' => '请先登录'
             );
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);die();
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            die();
         }
         $student_id = $this->User->query_id($_SESSION['open_id']);
         if (! empty($student_id)) {
@@ -43,7 +79,10 @@ class Course extends CI_Controller
 
     public function insert_course()
     {
-        $name = $this->input->post('name');
+//        echo $name = $this->input->post('name');
+        $input = file_get_contents("php://input");
+        $json = json_decode($input);
+        (! empty($json->name)) ? ($name = $json->name) : die('{"errno":103,"error":"请将信息填写完整！"}');
         if ($name) {
             $data = array(
                 'name' => trim($name),
@@ -70,7 +109,8 @@ class Course extends CI_Controller
 
     public function delete_course()
     {
-        $id = $this->input->post('course_id');
+        $id = $this->id;
+        //$id = $this->input->post('course_id');
         if ($this->Course->delete_course($id)) {
             $data = array(
                 'errno' => 0
@@ -86,24 +126,21 @@ class Course extends CI_Controller
 
     public function update_course()
     {
-        $data['id'] = $this->input->post('course_id');
-        $data['name'] = trim($this->input->post('name'));
-        if ($data['id'] && $data['name']) {
-            if ($this->Course->update_course($data)) {
-                
-                $data = array(
-                    'errno' => 0
-                );
-            } else {
-                $data = array(
-                    'errno' => 102,
-                    'error' => '更新失败，请再次尝试！'
-                );
-            }
+        // $data['id'] = $this->input->post('course_id');
+        // $data['name'] = trim($this->input->post('name'));
+        $input = file_get_contents("php://input");
+        $json = json_decode($input);
+        (! empty($json->id)) ? ($data['id'] = $json->id) : die('{"errno":103,"error":"请将信息填写完整！"}');
+        (! empty($json->name)) ? ($data['name'] = $json->name) : die('{"errno":103,"error":"请将信息填写完整！"}');
+        if ($this->Course->update_course($data)) {
+            
+            $data = array(
+                'errno' => 0
+            );
         } else {
             $data = array(
-                'errno' => 103,
-                'error' => '请将信息填写完整！'
+                'errno' => 102,
+                'error' => '更新失败，请再次尝试！'
             );
         }
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
