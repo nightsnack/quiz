@@ -14,10 +14,10 @@ class CourseModel extends CI_Model
         $this->load->database();
     }
     
-    public function query_course($user_id)
+    public function query_course($open_id)
     {
         $this->db->select('id,name');
-        $this->db->where('user_id',$user_id);
+        $this->db->where('open_id',$open_id);
         $query = $this->db->get($this->table)->result_array();
         return $query;
     }
@@ -42,6 +42,13 @@ class CourseModel extends CI_Model
             $this->primary_key => $data[$this->primary_key]
         ));
         return $this->db->affected_rows();
+    }
+    
+    public function query_one_course($id)
+    {
+        $this->db->where('id',$id);
+        $query = $this->db->get($this->table)->result_array();
+        return $query;
     }
 }
 

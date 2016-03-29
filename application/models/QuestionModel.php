@@ -37,10 +37,10 @@ class QuestionModel extends CI_Model
      */
     public function query_one_question($question_id)
     {
-        $this->db->select('id,chapter_id,type,content_type,content,answer');
+        $this->db->select('*');
         $this->db->where($this->primary_key,$question_id);
         $query = $this->db->get($this->table)->result_array();
-        return $query[0];
+        return $query;
     }
     
     /**
@@ -50,7 +50,7 @@ class QuestionModel extends CI_Model
      */
     public function query_question_for_testpaper($chapter_id)
     {
-        $this->db->select('id,type,content_type,content');
+        $this->db->select('id,type,content');
         $this->db->where('chapter_id',$chapter_id);
         $query = $this->db->get($this->table)->result_array();
         return $query;

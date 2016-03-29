@@ -1,0 +1,50 @@
+            <section class="content-header">
+            <h1>
+            我的章节
+            <small>列表</small>
+            </h1>
+                <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
+                    <li><a href="#">章节</a></li>
+                    <li class="active">课程</li>
+                </ol>
+            </section>
+
+     <div class="content" style="min-height: 90px;">
+    <a class="btn btn-app" id="show">
+        <i class="fa fa-edit"></i> {{name}}
+     </a>
+     </div>
+     
+    <section class="content">
+    <div class="row" id="courses"></div>
+     
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">新增课程</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="tel">课程名称：</label>
+                    <input class="form-control" type="text" name="name" id="name" value="" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+                <button type="button" class="btn btn-primary" id="add">提交更改</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal -->
+</div>
+    
+
+    </section>
+    
+

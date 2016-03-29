@@ -43,6 +43,14 @@ class ChapterModel extends CI_Model
         ));
         return $this->db->affected_rows();
     }
+    
+    public function query_one_chapter($chapter_id)
+    {
+        $this->db->select('*');
+        $this->db->where($this->primary_key,$chapter_id);
+        $query = $this->db->get($this->table)->result_array();
+        return $query;
+    }
 }
 
 ?>

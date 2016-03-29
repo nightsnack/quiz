@@ -1,5 +1,10 @@
 <?php
-
+header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Methods:GET, POST,PUT, OPTIONS, DELETE');
+header("Content-type: text/html;charset=utf-8");
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Headers: X-Requested-With');
+header('Access-Control-Allow-Headers: Content-Type');
 class Chapter extends \CI_Controller
 {
     private $open_id = 'admin';
@@ -9,8 +14,34 @@ class Chapter extends \CI_Controller
         parent::__construct();
         $_SESSION['open_id'] = $this->open_id;
         $this->load->model('ChapterModel', 'Chapter');
+        $this->load->model('CourseModel', 'Course');
         $this->load->model('UserModel','User');
         $this->checklogin();
+    }
+    
+    function index($id='')
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+        $this->id = $id;
+        $this->switchMethod($method);
+    }
+    
+    private function switchMethod($method)
+    {
+        switch ($method) {
+            case 'GET':
+                $this->query_chapter();
+                break;
+            case 'PUT':
+                $this->update_chapter();
+                break;
+            case 'POST':
+                $this->insert_chapter();
+                break;
+            case 'DELETE':
+                $this->delete_chapter();
+                break;
+        }
     }
     
     private function checklogin()
@@ -38,19 +69,32 @@ class Chapter extends \CI_Controller
     public function query_chapter()
     {
         $course_id = $this->input->post('course_id');
+        
+        $result = $this->Course->query_one_course($course_id);
+        if ($result) {
+            if ($result[0]['open_id'] !== $_SESSION['open_id'])
+                die('{"errno":105,"error":"非法进入！"}');
+        }
+        
         $res = $this->Chapter->query_chapter($course_id);
-        $resp['course_id']=$course_id;
-        $resp['res'] = $res;
-        echo json_encode($resp, JSON_UNESCAPED_UNICODE);
+        echo json_encode($res, JSON_UNESCAPED_UNICODE);
     }
     
     public function insert_chapter()
     {
         $name = $this->input->post('name');
         $course_id = $this->input->post('course_id');
+        
+        $result = $this->Course->query_one_course($course_id);
+        if ($result) {
+            if ($result[0]['open_id'] !== $_SESSION['open_id'])
+                die('{"errno":105,"error":"非法进入！"}');
+        }
+        
         if ($name&&$course_id) {
             $data = array(
                 'name' => trim($name),
+                'open_id'=>$_SESSION['id'],
                 'course_id' => $course_id
             );
             if ($this->Chapter->insert_chapter($data)) {
@@ -72,10 +116,16 @@ class Chapter extends \CI_Controller
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     
-    public function delete_chapter()
+    private function delete_chapter()
     {
-        $id = $this->input->post('chapter_id');
-        if ($this->Chapter->delete_chapter($id)) {
+        $result = $this->Chapter->query_one_chapter($this->id);
+        if ($result) {
+            if ($result[0]['open_id'] !== $_SESSION['open_id'])
+                die('{"errno":105,"error":"非法进入！"}');
+        }
+        
+        
+        if ($this->Chapter->delete_chapter($this->id)) {
             $data = array(
                 'errno' => 0
             );
@@ -90,8 +140,17 @@ class Chapter extends \CI_Controller
     
     public function update_chapter()
     {
-        $data['id'] = $this->input->post('chapter_id');
-        $data['name'] = trim($this->input->post('name'));
+        $input = file_get_contents("php://input");
+        $json = json_decode($input);
+        (! empty($json->id)) ? ($data['id'] = $json->id) : die('{"errno":103,"error":"请将信息填写完整！"}');
+        (! empty($json->name)) ? ($data['name'] = $json->name) : die('{"errno":103,"error":"请将信息填写完整！"}');
+        
+        $result = $this->Chapter->query_one_chapter($data['id']);
+        if ($result) {
+            if ($result[0]['open_id'] !== $_SESSION['open_id'])
+                die('{"errno":105,"error":"非法进入！"}');
+        }
+        
         if ($data['id'] && $data['name']) {
             if ($this->Chapter->update_chapter($data)) {
     

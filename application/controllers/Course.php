@@ -12,18 +12,17 @@ class Course extends CI_Controller
     private $open_id = 'admin';
 
     private $id;
+
     function __construct()
     {
-        
         parent::__construct();
         $_SESSION['open_id'] = $this->open_id;
         $this->load->model('CourseModel', 'Course');
         $this->load->model('UserModel', 'User');
         $this->checklogin();
-        
     }
 
-    function index($id='')
+    function index($id = '')
     {
         $method = $_SERVER['REQUEST_METHOD'];
         $this->id = $id;
@@ -79,7 +78,7 @@ class Course extends CI_Controller
 
     public function insert_course()
     {
-//        echo $name = $this->input->post('name');
+        // echo $name = $this->input->post('name');
         $input = file_get_contents("php://input");
         $json = json_decode($input);
         (! empty($json->name)) ? ($name = $json->name) : die('{"errno":103,"error":"请将信息填写完整！"}');
@@ -110,7 +109,12 @@ class Course extends CI_Controller
     public function delete_course()
     {
         $id = $this->id;
-        //$id = $this->input->post('course_id');
+        // $id = $this->input->post('course_id');
+        $result = $this->Course->query_one_course($id);
+        if ($result) {
+            if ($result[0]['open_id'] !== $_SESSION['open_id']) 
+                die('{"errno":105,"error":"非法进入！"}');
+        }
         if ($this->Course->delete_course($id)) {
             $data = array(
                 'errno' => 0
@@ -132,6 +136,11 @@ class Course extends CI_Controller
         $json = json_decode($input);
         (! empty($json->id)) ? ($data['id'] = $json->id) : die('{"errno":103,"error":"请将信息填写完整！"}');
         (! empty($json->name)) ? ($data['name'] = $json->name) : die('{"errno":103,"error":"请将信息填写完整！"}');
+        $result = $this->Course->query_one_course($data['id']);
+        if ($result) {
+            if ($result[0]['open_id'] !== $_SESSION['open_id']) 
+                die('{"errno":105,"error":"非法进入！"}');
+        }
         if ($this->Course->update_course($data)) {
             
             $data = array(
