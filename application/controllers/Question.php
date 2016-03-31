@@ -225,11 +225,13 @@ class Question extends CI_Controller
                 'jpg',
                 'jpeg',
                 'png',
-                'bmp'
+                'bmp',
+                'JPG',
+                'JPEG'
             )
         );
         // 最大文件大小
-        $max_size = 100000;
+        $max_size = 10000000;  //10M
         
         $save_path = realpath($save_path) . '/';
         

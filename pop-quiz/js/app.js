@@ -8,7 +8,7 @@ require.config({
       'AdminLTE':'../node_modules/admin-lte/dist/js/app',
        'text':'../node_modules/requirejs-text/text',
        'router': 'router',
-      'htmleditor':'../node_modules/kindeditor/kindeditor-min',
+      'htmleditor':'../node_modules/kindeditor/kindeditor-all-min',
       'lang':'../node_modules/kindeditor/lang/zh_CN',
       "Validate":'../node_modules/jquery-validation/dist/jquery.validate'
   },

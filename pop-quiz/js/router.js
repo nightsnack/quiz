@@ -4,14 +4,14 @@ define([
     'views/CoCollectionView',
     'views/CpCollectionView',
     'views/QuCollectionView',
-    'views/CreateView',
+    'views/MyCodeView',
 ],
     function (Backbone,
         IndexView,
         CoCollectionView,
         CpCollectionView,
         QuCollectionView,
-        CreateView) {
+        MyCodeView) {
 
         var AppRouter = Backbone.Router.extend({
             /* define the route and function maps for this router */
@@ -20,23 +20,34 @@ define([
                 "course": "showCourse",
                 "course/:id": "showChapter",
                 "chapter/:id": "showQuestion",
-//                "chapter/:id/editor": "createQuestion",
+                "code/:id": "MyCode",
             },
             showIndex: function () {
+                this.switchRouter();
                 var indexView = new IndexView();
             },
             showCourse: function () {
+                this.switchRouter();
                 var coCollectionView = new CoCollectionView();
             },
             showChapter: function (id) {
+                this.switchRouter();
                 var cpCollectionView = new CpCollectionView(id);
             },
             showQuestion: function (chapterid) {
+                this.switchRouter();
                 var quCollectionView = new QuCollectionView(chapterid);
+                
+            },
+            MyCode:function(id) {
+                var myCodeView = new MyCodeView(id);
+            },
+            switchRouter:function () {
+//                if(this.View) {
+//                    this.View.remove();
+//                    }
             }
-//            createQuestion: function (id) {
-//                var createView = new CreateView(id);
-//            }
+
 
         });
 

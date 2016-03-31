@@ -1,0 +1,52 @@
+<section class="content-header">
+    <h1>
+            提取码
+            <small>详情页</small>
+            </h1>
+</section>
+
+<section class="content">
+<div class="row">
+   {{#each echo}}
+    <div class="col-xs-12">
+              <div class="box box-success box-solid">
+                <div class="box-header with-border">
+                  <h3 class="box-title">提取码{{accesscode}}</h3>
+                  <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                  </div><!-- /.box-tools -->
+                </div><!-- /.box-header -->
+                <div class="box-footer no-padding">
+                  <ul class="nav nav-stacked">
+                    <li><a href="#">创建时间 <span class="pull-right badge bg-blue">{{create_time}}</span></a></li>
+                    <li><a href="#">截止时间 <span class="pull-right badge bg-aqua">{{end_time}}</span></a></li>
+                  </ul>
+                  
+                </div>
+                <div class="box-body">
+<table class="table">
+                    <tbody><tr>
+                      <th style="width: 10px">#</th>
+                      <th>学号</th>
+                      <th>姓名</th>
+                      <th>答题时间</th>
+                      <th>正确率</th>
+                    </tr>
+                    {{#each students}}
+                    <tr>
+                      <td>{{@index}}</td>
+                      <td>{{student_id}}</td>
+                      <td>{{name}}</td>
+                      <td>{{time}}</td>
+                      <td>{{right}}/{{all}}</td>
+                    </tr>
+                    {{/each}}
+     
+                  </tbody></table>
+                </div><!-- /.box-body -->
+                
+              </div><!-- /.box -->
+    </div>
+{{/each}}
+</div>
+</section>

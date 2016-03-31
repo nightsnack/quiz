@@ -18,6 +18,7 @@ class AccessCodeModel extends CI_Model
     {
         $this->db->select('accesscode,create_time,end_time');
         $this->db->where('chapter_id',$chapter_id);
+        $this->db->order_by('create_time','DESC');
         return $this->db->get($this->table)->result_array();
     }
     

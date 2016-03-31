@@ -5,7 +5,7 @@ header("Content-type: text/html;charset=utf-8");
 header("Access-Control-Allow-Credentials: true");
 header('Access-Control-Allow-Headers: X-Requested-With');
 header('Access-Control-Allow-Headers: Content-Type');
-class Chapter extends \CI_Controller
+class Chapter extends CI_Controller
 {
     private $open_id = 'admin';
 
@@ -94,7 +94,7 @@ class Chapter extends \CI_Controller
         if ($name&&$course_id) {
             $data = array(
                 'name' => trim($name),
-                'open_id'=>$_SESSION['id'],
+                'open_id'=>$_SESSION['open_id'],
                 'course_id' => $course_id
             );
             if ($this->Chapter->insert_chapter($data)) {

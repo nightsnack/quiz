@@ -32,7 +32,7 @@ define(["Backbone",
                 });
                 this.$el.html(this.template(this.model.toJSON()));
                 this.render();
-                this.changeSecond();
+                this.changeSecond(this.model.get('type'));
                 this.addSelected(this.model.get('type'),this.model.get('answer'));
             },
 
@@ -50,8 +50,10 @@ define(["Backbone",
         'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
         'anchor', 'link', 'unlink'
 ],
+                    
                     uploadJson: 'http://127.0.0.1/~chiyexiao/quiz/index.php/Question/upload_json',
                     fileManagerJson: 'http://127.0.0.1/~chiyexiao/quiz/index.php/Question/file_manager_json',
+                    allowFileManager : true
                 });
 
             },
@@ -65,8 +67,7 @@ define(["Backbone",
                 $('option[value='+type+']').attr("selected",true); 
                 $('option[value='+answer+']').attr("selected",true); 
             },
-            changeSecond: function () {
-                var sel_val = $('#type').val();
+            changeSecond: function (sel_val) {
                 if (sel_val == 0) {
                     $('#textOne').show();
                     $('#textTwo').hide();

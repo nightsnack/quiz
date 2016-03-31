@@ -41,7 +41,8 @@ define(["Backbone",
 
             render: function () {
                 var json = {
-                    name: '新增'
+                    name: '新增',
+                    href: code_null+this.chapter_id
                 };
 
                 this.$el.html(this.template(json));

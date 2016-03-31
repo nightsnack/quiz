@@ -47,8 +47,10 @@ define(["Backbone",
         'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
         'anchor', 'link', 'unlink'
 ],
+                        
                         uploadJson: 'http://127.0.0.1/~chiyexiao/quiz/index.php/Question/upload_json',
                         fileManagerJson: 'http://127.0.0.1/~chiyexiao/quiz/index.php/Question/file_manager_json',
+                        allowFileManager : true,
                     });
 
             },
