@@ -6,7 +6,7 @@ class AccessCodeModel extends CI_Model
     private $primary_key = "id";
     
     /* 表名 */
-    private $table = "AccessCode";
+    private $table = "Accesscode";
     
     function __construct()
     {

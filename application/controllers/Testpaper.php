@@ -16,6 +16,7 @@ class Testpaper extends CI_Controller
         $this->load->model('ChapterModel', 'Chapter');
         $this->load->driver('cache');
         $this->checklogin();
+        date_default_timezone_set("Asia/Shanghai");
     }
 
     private function checklogin()
@@ -72,6 +73,9 @@ class Testpaper extends CI_Controller
         );
         
         $code = substr(time(), - 6);
+        var_dump( $this->cache->memcached->is_supported());
+        die("33");
+        
         while ($this->cache->memcached->get($code))
             $code = substr(time(), - 6);
         
@@ -92,120 +96,6 @@ class Testpaper extends CI_Controller
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     
-    /**
-     * 根据accesscode回传试题库，用于生成试卷
-     */
-    public function get_testpaper()
-    {
-        $code = $this->input->post('accesscode');
-        if ($code) {
-            $testpaper = $this->cache->memcached->get($code);
-            if ($testpaper) {
-                $testpaper['questions'] = $this->Question->query_question_for_testpaper($testpaper['chapter_id']);
-                unset($testpaper['keys']);
-                $data = $testpaper;
-            } else {
-                $data = array(
-                    'errno' => 102,
-                    'error' => '该试卷不存在'
-                );
-            }
-        } else {
-            $data = array(
-                'errno' => 103,
-                'error' => '请输入6位提取码'
-            );
-        }
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    }
-
-    /**
-     * 用户发过来答案，查表，新增两个表的数据，并返回。
-     * 返回答对数量，错误题号，该题的正确答案，以及班级前十名。
-     */
-    public function answer_compare()
-    {
-        $input = file_get_contents("php://input");
-        $json = json_decode($input);
-        (! empty($json->accesscode)) ? ($accesscode = $json->accesscode) : die('{"errno":103,"error":"请将信息填写完整！"}');
-        (! empty($json->answer)) ? ($as = $json->answer) : die('{"errno":103,"error":"请将信息填写完整！"}');
-        $testpaper = $this->cache->memcached->get($accesscode);
-        if(empty($testpaper)) die('{"errno":104,"error":"该作业不存在或已超期"}');
-        if($this->Answer->query_test($_SESSION['student_id'],$testpaper['chapter_id'],$accesscode))
-            die('{"errno":105,"error":"该作业您已提交过"}');
-        
-        $answer = array();
-        $position=array();
-        foreach ($as as $c) {
-            $position[] =$c->id;
-            $answer[$c->id] = $c->answer;
-        }
-//         var_dump($position);
-//         var_dump($answer);
-        $keys = $testpaper['keys'];
-        $data_answer = array();
-        $wrong = array();
-        $right = 0;
-        foreach ($answer as $id => $value) {
-            if (strpos($keys[$id],',')) {
-                $blanks = explode(',', $keys[$id]);
-                $flag = in_array($value, $blanks);
-                $data_answer[] = array(
-                    'student_id' => $_SESSION['student_id'],
-                    'accesscode' => $accesscode,
-                    'question_id' => $id,
-                    'answer' => $value,
-                    'judge' => $flag,
-                    'correct' => $keys[$id]
-                );
-                if ($flag==true)
-                {
-                    $right++;
-                }else{
-                    $question['question_position']=array_search($id, $position)+1;
-                    $question['correct']=$keys[$id];
-                    $wrong[] =$question;
-                }
-            } else {
-                $flag = ($value == $keys[$id]);
-                $data_answer[] = array(
-                    'student_id' => $_SESSION['student_id'],
-                    'accesscode' => $accesscode,
-                    'question_id' => $id,
-                    'answer' => $value,
-                    'judge' => $flag,
-                    'correct' => $keys[$id]
-                );
-                if ($flag==true)
-                {
-                    $right++;
-                }else{
-                    $question['question_position']=array_search($id, $position)+1;
-                    $question['correct']=$keys[$id];
-                    $wrong[] =$question; 
-                }
-            }
-        }
-        
-        $testpaper = [
-            'student_id'=>$_SESSION['student_id'],
-            'chapter_id'=>$testpaper['chapter_id'],
-            'accesscode'=>$accesscode,
-            'time'=>date('Y-m-d H:i:s'),
-            'right'=>$right,
-            'all'=>count($answer)
-        ];
-        
-        $this->Answer->insert_student_record($data_answer);
-        $this->Answer->insert_test_result($testpaper);
-        $top = $this->Answer->query_top($testpaper['chapter_id'],$accesscode);
-        $data = [
-            'correct'=>$right,
-            'top'=>$top,
-            'wrong'=>$wrong
-        ];
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    }
 
     /**
      * 这个章节对应的所有提取码的详情以及这个提取码的答题学生详情
