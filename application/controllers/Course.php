@@ -9,14 +9,14 @@ header('Access-Control-Allow-Headers: Content-Type');
 class Course extends CI_Controller
 {
 
-    private $open_id = 'admin';
+    private $unionid = 'admin';
 
     private $id;
 
     function __construct()
     {
         parent::__construct();
-        $_SESSION['open_id'] = $this->open_id;
+        $_SESSION['unionid'] = $this->unionid;
         $this->load->model('CourseModel', 'Course');
         $this->load->model('UserModel', 'User');
         $this->checklogin();
@@ -49,7 +49,7 @@ class Course extends CI_Controller
 
     private function checklogin()
     {
-        if (! $_SESSION['open_id']) {
+        if (! $_SESSION['unionid']) {
             $data = array(
                 'errno' => 101,
                 'error' => '请先登录'
@@ -57,7 +57,7 @@ class Course extends CI_Controller
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             die();
         }
-        $student_id = $this->User->query_id($_SESSION['open_id']);
+        $student_id = $this->User->query_id($_SESSION['unionid']);
         if (! empty($student_id)) {
             $_SESSION['student_id'] = $student_id[0]['student_id'];
         } else {
@@ -72,7 +72,7 @@ class Course extends CI_Controller
 
     public function query_course()
     {
-        $res = $this->Course->query_course($_SESSION['open_id']);
+        $res = $this->Course->query_course($_SESSION['unionid']);
         echo json_encode($res, JSON_UNESCAPED_UNICODE);
     }
 
@@ -85,7 +85,7 @@ class Course extends CI_Controller
         if ($name) {
             $data = array(
                 'name' => trim($name),
-                'user_id' => $_SESSION['open_id']
+                'user_id' => $_SESSION['unionid']
             );
             if ($this->Course->insert_course($data)) {
                 $data = array(
@@ -112,7 +112,7 @@ class Course extends CI_Controller
         // $id = $this->input->post('course_id');
         $result = $this->Course->query_one_course($id);
         if ($result) {
-            if ($result[0]['open_id'] !== $_SESSION['open_id']) 
+            if ($result[0]['unionid'] !== $_SESSION['unionid']) 
                 die('{"errno":105,"error":"非法进入！"}');
         }
         if ($this->Course->delete_course($id)) {
@@ -138,7 +138,7 @@ class Course extends CI_Controller
         (! empty($json->name)) ? ($data['name'] = $json->name) : die('{"errno":103,"error":"请将信息填写完整！"}');
         $result = $this->Course->query_one_course($data['id']);
         if ($result) {
-            if ($result[0]['open_id'] !== $_SESSION['open_id']) 
+            if ($result[0]['unionid'] !== $_SESSION['unionid']) 
                 die('{"errno":105,"error":"非法进入！"}');
         }
         if ($this->Course->update_course($data)) {

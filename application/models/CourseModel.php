@@ -14,10 +14,10 @@ class CourseModel extends CI_Model
         $this->load->database();
     }
     
-    public function query_course($open_id)
+    public function query_course($unionid)
     {
         $this->db->select('id,name');
-        $this->db->where('open_id',$open_id);
+        $this->db->where('unionid',$unionid);
         $query = $this->db->get($this->table)->result_array();
         return $query;
     }

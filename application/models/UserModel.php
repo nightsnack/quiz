@@ -3,7 +3,7 @@
 class UserModel extends CI_Model
 {
     /* 主键名 */
-    private $primary_key = "open_id";
+    private $primary_key = "unionid";
     
     /* 表名 */
     private $table = "user_info";
@@ -14,10 +14,10 @@ class UserModel extends CI_Model
         $this->load->database();
     }
     
-    function query_id($open_id)
+    function query_id($unionid)
     {
-        $this->db->select('student_id');
-        $this->db->where('open_id',$open_id);
+        $this->db->select('student_id,name');
+        $this->db->where('unionid',$unionid);
         return $this->db->get($this->table)->result_array();
     }
     

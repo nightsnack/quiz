@@ -10,14 +10,14 @@ require_once 'JSON.php';
 class Question extends CI_Controller
 {
 
-    private $open_id = 'admin';
+    private $unionid = 'admin';
 
     private $pictureurl = 'oss.dmsq.com/';
 
     function __construct()
     {
         parent::__construct();
-        $_SESSION['open_id'] = $this->open_id;
+        $_SESSION['unionid'] = $this->unionid;
         $this->load->model('QuestionModel', 'Question');
         $this->load->model('ChapterModel', 'Chapter');
         
@@ -43,7 +43,7 @@ class Question extends CI_Controller
 
     private function checklogin()
     {
-        if (! $_SESSION['open_id']) {
+        if (! $_SESSION['unionid']) {
             $data = array(
                 'errno' => 101,
                 'error' => '请先登录'
@@ -51,7 +51,7 @@ class Question extends CI_Controller
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             die();
         }
-        $student_id = $this->User->query_id($_SESSION['open_id']);
+        $student_id = $this->User->query_id($_SESSION['unionid']);
         if (! empty($student_id)) {
             $_SESSION['student_id'] = $student_id[0]['student_id'];
         } else {
@@ -69,7 +69,7 @@ class Question extends CI_Controller
         $chapter_id = $this->input->post('chapter_id');
         $res = $this->Question->query_question($chapter_id);
         if ($res) {
-            if ($res[0]['open_id'] !== $_SESSION['open_id'])
+            if ($res[0]['unionid'] !== $_SESSION['unionid'])
                 die('{"errno":105,"error":"非法进入！"}');
         }
         $temp = $this->Question->query_recent_count($chapter_id);
@@ -93,14 +93,14 @@ class Question extends CI_Controller
     public function insert_question()
     {
         $insert_data['chapter_id'] = $this->input->post('chapter_id');
-        $insert_data['open_id'] = $_SESSION['open_id'];
+        $insert_data['unionid'] = $_SESSION['unionid'];
         $insert_data['type'] = $this->input->post('type');
         $insert_data['content'] = trim($this->input->post('content'));
         $insert_data['answer'] = $this->input->post('answer'); // 如果是填空，直接发字符串
         
         $res = $this->Chapter->query_one_chapter($insert_data['chapter_id']);
         if ($res) {
-            if ($res[0]['open_id'] !== $_SESSION['open_id'])
+            if ($res[0]['unionid'] !== $_SESSION['unionid'])
                 die('{"errno":105,"error":"非法进入！"}');
         }
         
@@ -138,7 +138,7 @@ class Question extends CI_Controller
         
         $res = $this->Question->query_one_question($id);
         if ($res) {
-            if ($res[0]['open_id'] !== $_SESSION['open_id'])
+            if ($res[0]['unionid'] !== $_SESSION['unionid'])
                 die('{"errno":105,"error":"非法进入！"}');
         }
 
@@ -161,7 +161,7 @@ class Question extends CI_Controller
         
         $res = $this->Question->query_one_question($question_id);
         if ($res) {
-            if ($res[0]['open_id'] !== $_SESSION['open_id'])
+            if ($res[0]['unionid'] !== $_SESSION['unionid'])
                 die('{"errno":105,"error":"非法进入！"}');
             echo json_encode($res[0], JSON_UNESCAPED_UNICODE);
         }
@@ -178,7 +178,7 @@ class Question extends CI_Controller
         
         $res = $this->Question->query_one_question($update_data['id']);
         if ($res) {
-            if ($res[0]['open_id'] !== $_SESSION['open_id'])
+            if ($res[0]['unionid'] !== $_SESSION['unionid'])
                 die('{"errno":105,"error":"非法进入！"}');
         }
         
@@ -500,11 +500,6 @@ class Question extends CI_Controller
         exit();
     }
 
-    function demo()
-    {
-        $data = $this->input->post();
-        var_dump($data);
-    }
 }
 
 ?>

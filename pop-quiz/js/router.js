@@ -23,29 +23,34 @@ define([
                 "code/:id": "MyCode",
             },
             showIndex: function () {
-                this.switchRouter();
-                var indexView = new IndexView();
+                var indexView = new IndexView;
+                this.switchRouter(indexView);
             },
             showCourse: function () {
-                this.switchRouter();
                 var coCollectionView = new CoCollectionView();
+                this.switchRouter(coCollectionView);
             },
             showChapter: function (id) {
-                this.switchRouter();
                 var cpCollectionView = new CpCollectionView(id);
+                this.switchRouter(CpCollectionView);
+
             },
             showQuestion: function (chapterid) {
-                this.switchRouter();
                 var quCollectionView = new QuCollectionView(chapterid);
+                this.switchRouter(quCollectionView);
                 
             },
             MyCode:function(id) {
                 var myCodeView = new MyCodeView(id);
+                this.switchRouter(myCodeView);
+
             },
-            switchRouter:function () {
-//                if(this.View) {
-//                    this.View.remove();
+            switchRouter:function (View) {
+//                if(this.CurrentView) {
+////                    this.CurrentView.remove();
+//                    this.CurrentView.undelegateEvents();
 //                    }
+//                this.CurrentView=View;
             }
 
 

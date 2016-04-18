@@ -3,12 +3,12 @@
 class Testpaper extends CI_Controller
 {
 
-    private $open_id = 'admin';
+//     private $open_id = 'admin';
 
     function __construct()
     {
         parent::__construct();
-        $_SESSION['open_id'] = $this->open_id;
+//         $_SESSION['open_id'] = $this->open_id;
         $this->load->model('QuestionModel', 'Question');
         $this->load->model('AnswerModel','Answer');
         $this->load->model('AccessCodeModel','Accesscode');
@@ -72,12 +72,10 @@ class Testpaper extends CI_Controller
             'keys' => $keys
         );
         
-        $code = substr(time(), - 6);
-        var_dump( $this->cache->memcached->is_supported());
-        die("33");
+        $code = substr(time(), - 8);
         
         while ($this->cache->memcached->get($code))
-            $code = substr(time(), - 6);
+            $code = substr(time(), - 8);
         
         $this->cache->memcached->save($code, $memory_data, $lasttime);
         $accesscode_data = [

@@ -1,16 +1,16 @@
 require.config({
   paths: {
-    'jquery': '../node_modules/jquery/dist/jquery',
-     'underscore':'../node_modules/underscore/underscore',
-      'Backbone':'../node_modules/backbone/backbone-min',
-      'Handlebars':'../node_modules/handlebars/dist/handlebars',
-      'Bootstrap':'../node_modules/bootstrap/dist/js/bootstrap',
-      'AdminLTE':'../node_modules/admin-lte/dist/js/app',
-       'text':'../node_modules/requirejs-text/text',
+    'jquery': 'node_modules/jquery/dist/jquery',
+     'underscore':'node_modules/underscore/underscore',
+      'Backbone':'node_modules/backbone/backbone-min',
+      'Handlebars':'node_modules/handlebars/dist/handlebars',
+      'Bootstrap':'node_modules/bootstrap/dist/js/bootstrap',
+      'AdminLTE':'node_modules/admin-lte/dist/js/app',
+       'text':'node_modules/requirejs-text/text',
        'router': 'router',
-      'htmleditor':'../node_modules/kindeditor/kindeditor-all-min',
-      'lang':'../node_modules/kindeditor/lang/zh_CN',
-      "Validate":'../node_modules/jquery-validation/dist/jquery.validate'
+      'htmleditor':'node_modules/kindeditor/kindeditor-all-min',
+      'lang':'node_modules/kindeditor/lang/zh_CN',
+      "Validate":'node_modules/jquery-validation/dist/jquery.validate'
   },
   shim: {
     'underscore': {

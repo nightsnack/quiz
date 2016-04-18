@@ -12,9 +12,9 @@ class Paper extends CI_Controller
         $this->load->driver('cache');
     }
     
-    private function checklogin($open_id)
+    private function checklogin($unionid)
     {
-        if (! $open_id) {
+        if (! $unionid) {
             $data = array(
                 'errno' => 101,
                 'error' => '请先登录'
@@ -22,7 +22,7 @@ class Paper extends CI_Controller
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             die();
         }
-        $student_id = $this->User->query_id($open_id);
+        $student_id = $this->User->query_id($unionid);
         if(!empty($student_id)){
             $_SESSION['student_id'] = $student_id[0]['student_id'];
         } else {
@@ -42,8 +42,8 @@ class Paper extends CI_Controller
     public function get_testpaper()
     {
         $code = trim($this->input->post('accesscode'));
-        $open_id = $this->input->post('open_id');
-        $this->checklogin($open_id);
+        $unionid = $this->input->post('unionid');
+        $this->checklogin($unionid);
         if ($code) {
             $testpaper = $this->cache->memcached->get($code);
             if ($testpaper) {

@@ -15,4 +15,6 @@ var base = "http://127.0.0.1/~chiyexiao/quiz/index.php",
     question_update =
     base + "/Question/update_question",
     mycode =
-    base + "/Testpaper/mycode_result";
+    base + "/Testpaper/mycode_result",
+    index_user =
+    base + "/User/check_login";
