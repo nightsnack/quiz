@@ -9,14 +9,14 @@ header('Access-Control-Allow-Headers: Content-Type');
 class Course extends CI_Controller
 {
 
-    private $unionid = 'admin';
+//     private $unionid = 'admin';
 
     private $id;
 
     function __construct()
     {
         parent::__construct();
-        $_SESSION['unionid'] = $this->unionid;
+//         $_SESSION['unionid'] = $this->unionid;
         $this->load->model('CourseModel', 'Course');
         $this->load->model('UserModel', 'User');
         $this->checklogin();

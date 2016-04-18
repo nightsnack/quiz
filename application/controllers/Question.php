@@ -10,14 +10,12 @@ require_once 'JSON.php';
 class Question extends CI_Controller
 {
 
-    private $unionid = 'admin';
-
-    private $pictureurl = 'oss.dmsq.com/';
-
+//     private $unionid = 'admin';
+    
     function __construct()
     {
         parent::__construct();
-        $_SESSION['unionid'] = $this->unionid;
+//         $_SESSION['unionid'] = $this->unionid;
         $this->load->model('QuestionModel', 'Question');
         $this->load->model('ChapterModel', 'Chapter');
         

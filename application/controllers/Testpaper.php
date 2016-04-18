@@ -3,12 +3,12 @@
 class Testpaper extends CI_Controller
 {
 
-//     private $open_id = 'admin';
+//     private $unionid = 'admin';
 
     function __construct()
     {
         parent::__construct();
-//         $_SESSION['open_id'] = $this->open_id;
+//         $_SESSION['unionid'] = $this->unionid;
         $this->load->model('QuestionModel', 'Question');
         $this->load->model('AnswerModel','Answer');
         $this->load->model('AccessCodeModel','Accesscode');
@@ -21,7 +21,7 @@ class Testpaper extends CI_Controller
 
     private function checklogin()
     {
-        if (! $_SESSION['open_id']) {
+        if (! $_SESSION['unionid']) {
             $data = array(
                 'errno' => 101,
                 'error' => '请先登录'
@@ -29,7 +29,7 @@ class Testpaper extends CI_Controller
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             die();
         }
-        $student_id = $this->User->query_id($_SESSION['open_id']);
+        $student_id = $this->User->query_id($_SESSION['unionid']);
         if(!empty($student_id)){
         $_SESSION['student_id'] = $student_id[0]['student_id'];
         } else {
@@ -54,7 +54,7 @@ class Testpaper extends CI_Controller
         
         $result = $this->Chapter->query_one_chapter($chapter_id);
         if ($result) {
-            if ($result[0]['open_id'] !== $_SESSION['open_id'])
+            if ($result[0]['unionid'] !== $_SESSION['unionid'])
                 die('{"errno":105,"error":"非法进入！"}');
         }
         

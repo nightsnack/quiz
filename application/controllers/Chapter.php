@@ -7,12 +7,12 @@ header('Access-Control-Allow-Headers: X-Requested-With');
 header('Access-Control-Allow-Headers: Content-Type');
 class Chapter extends CI_Controller
 {
-    private $unionid = 'admin';
+//     private $unionid = 'admin';
 
     function __construct()
     {
         parent::__construct();
-        $_SESSION['unionid'] = $this->unionid;
+//         $_SESSION['unionid'] = $this->unionid;
         $this->load->model('ChapterModel', 'Chapter');
         $this->load->model('CourseModel', 'Course');
         $this->load->model('UserModel','User');
