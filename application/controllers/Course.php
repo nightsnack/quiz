@@ -49,21 +49,10 @@ class Course extends CI_Controller
 
     private function checklogin()
     {
-        if (! $_SESSION['unionid']) {
+        if (!isset($_SESSION['unionid'])) {
             $data = array(
                 'errno' => 101,
                 'error' => '请先登录'
-            );
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);
-            die();
-        }
-        $student_id = $this->User->query_id($_SESSION['unionid']);
-        if (! empty($student_id)) {
-            $_SESSION['student_id'] = $student_id[0]['student_id'];
-        } else {
-            $data = array(
-                'errno' => 100,
-                'error' => '请先绑定'
             );
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             die();
@@ -85,7 +74,7 @@ class Course extends CI_Controller
         if ($name) {
             $data = array(
                 'name' => trim($name),
-                'user_id' => $_SESSION['unionid']
+                'unionid' => $_SESSION['unionid']
             );
             if ($this->Course->insert_course($data)) {
                 $data = array(

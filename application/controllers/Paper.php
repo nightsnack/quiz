@@ -1,4 +1,11 @@
 <?php
+//!!!!!!!构造函数没有session验证！！！！！！！
+header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Methods:GET, POST,PUT, OPTIONS, DELETE');
+header("Content-type: text/html;charset=utf-8");
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Headers: X-Requested-With');
+header('Access-Control-Allow-Headers: Content-Type');
 
 class Paper extends CI_Controller
 {
@@ -12,9 +19,9 @@ class Paper extends CI_Controller
         $this->load->driver('cache');
     }
     
-    private function checklogin($unionid)
+    private function checklogin($openid,$student_id,$student_name)
     {
-        if (! $unionid) {
+        if (! $openid) {
             $data = array(
                 'errno' => 101,
                 'error' => '请先登录'
@@ -22,16 +29,17 @@ class Paper extends CI_Controller
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             die();
         }
-        $student_id = $this->User->query_id($unionid);
-        if(!empty($student_id)){
-            $_SESSION['student_id'] = $student_id[0]['student_id'];
+        $student_info = $this->User->query_id($openid);
+        if(!empty($student_info)){
+            $_SESSION['student_id'] = $student_info[0]['student_id'];
         } else {
-            $data = array(
-                'errno' => 100,
-                'error' => '请先绑定'
+            $insertdata = array(
+                'openid' => $openid,
+                'student_id' => $student_id,
+                'name' => $student_name
             );
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);
-            die();
+            $this->User->insert_student($insertdata);
+            $_SESSION['student_id'] = $student_id;
         }
     }
 
@@ -42,8 +50,10 @@ class Paper extends CI_Controller
     public function get_testpaper()
     {
         $code = trim($this->input->post('accesscode'));
-        $unionid = $this->input->post('unionid');
-        $this->checklogin($unionid);
+        $openid = $this->input->post('openid');
+        $student_id = $this->input->post('student_id');
+        $student_name = $this->input->post('student_name');
+        $this->checklogin($openid,$student_id,$student_name);
         if ($code) {
             $testpaper = $this->cache->memcached->get($code);
             if ($testpaper) {
@@ -56,10 +66,13 @@ class Paper extends CI_Controller
                     'error' => '该试卷不存在'
                 );
             }
+            $chapter_id = $this->Accesscode->code_to_chapter_id($code);
+            $top = $this->Answer->query_top($chapter_id[0]['chapter_id'],$code);
+            $data['top']=$top;
         } else {
             $data = array(
                 'errno' => 103,
-                'error' => '请输入6位提取码'
+                'error' => '请输入8位提取码'
             );
         }
         echo json_encode($data, JSON_UNESCAPED_UNICODE);

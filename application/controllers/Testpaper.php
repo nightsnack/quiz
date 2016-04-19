@@ -1,9 +1,15 @@
 <?php
+header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Methods:GET, POST,PUT, OPTIONS, DELETE');
+header("Content-type: text/html;charset=utf-8");
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Headers: X-Requested-With');
+header('Access-Control-Allow-Headers: Content-Type');
 
 class Testpaper extends CI_Controller
 {
 
-//     private $unionid = 'admin';
+//     private $unionid = 'oIv6js6DeLN83bRCz-1oefOycwl8';
 
     function __construct()
     {
@@ -15,27 +21,16 @@ class Testpaper extends CI_Controller
         $this->load->model('UserModel','User');
         $this->load->model('ChapterModel', 'Chapter');
         $this->load->driver('cache');
-        $this->checklogin();
+
         date_default_timezone_set("Asia/Shanghai");
     }
 
     private function checklogin()
     {
-        if (! $_SESSION['unionid']) {
+        if (!isset($_SESSION['unionid'])) {
             $data = array(
                 'errno' => 101,
                 'error' => '请先登录'
-            );
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);
-            die();
-        }
-        $student_id = $this->User->query_id($_SESSION['unionid']);
-        if(!empty($student_id)){
-        $_SESSION['student_id'] = $student_id[0]['student_id'];
-        } else {
-            $data = array(
-                'errno' => 100,
-                'error' => '请先绑定'
             );
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             die();
@@ -44,6 +39,7 @@ class Testpaper extends CI_Controller
 
     public function create_testpaper()
     {
+        $unionid = $this->input->post('unionid');
         $endtime = $this->input->post('endtime');
         $chapter_id = $this->input->post('chapter_id');
         $lasttime = floor((strtotime($endtime) - strtotime("now")));
@@ -54,7 +50,7 @@ class Testpaper extends CI_Controller
         
         $result = $this->Chapter->query_one_chapter($chapter_id);
         if ($result) {
-            if ($result[0]['unionid'] !== $_SESSION['unionid'])
+            if ($result[0]['unionid'] !== $unionid)
                 die('{"errno":105,"error":"非法进入！"}');
         }
         
@@ -100,6 +96,7 @@ class Testpaper extends CI_Controller
      */
     public function mycode_result()
     {
+        $this->checklogin();
         $chapter_id = $this->input->post('chapter_id');
         if (empty($chapter_id))
             die('{"errno":103,"error":"请将信息填写完整！"}');

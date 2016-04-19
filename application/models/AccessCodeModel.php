@@ -28,6 +28,12 @@ class AccessCodeModel extends CI_Model
         return $this->db->affected_rows();
     }
     
+    public function code_to_chapter_id($accesscode)
+    {
+        $this->db->select('chapter_id');
+        $this->db->where('accesscode',$accesscode);
+        return $this->db->get($this->table)->result_array();
+    }
     /*已废弃
     public function query_accesscode($chapter_id)
     {
