@@ -13,8 +13,8 @@ class Chapter extends CI_Controller
     function __construct()
     {
         parent::__construct();
-//         $_SESSION['unionid'] = $this->unionid;
-        $this->load->model('ChapterModel', 'Chapter');
+        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+                $this->load->model('ChapterModel', 'Chapter');
         $this->load->model('CourseModel', 'Course');
         $this->load->model('UserModel','User');
         $this->checklogin();

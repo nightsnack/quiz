@@ -17,6 +17,7 @@ class Paper extends CI_Controller
         $this->load->model('AccessCodeModel','Accesscode');
         $this->load->model('UserModel','User');
         $this->load->driver('cache');
+        date_default_timezone_set("Asia/Shanghai");
     }
     
     private function checklogin($openid,$student_id,$student_name)
@@ -31,7 +32,7 @@ class Paper extends CI_Controller
         }
         $student_info = $this->User->query_id($openid);
         if(!empty($student_info)){
-            $_SESSION['student_id'] = $student_info[0]['student_id'];
+//             $_SESSION['student_id'] = $student_info[0]['student_id'];
         } else {
             $insertdata = array(
                 'openid' => $openid,
@@ -39,7 +40,7 @@ class Paper extends CI_Controller
                 'name' => $student_name
             );
             $this->User->insert_student($insertdata);
-            $_SESSION['student_id'] = $student_id;
+//             $_SESSION['student_id'] = $student_id;
         }
     }
 
@@ -59,6 +60,7 @@ class Paper extends CI_Controller
             if ($testpaper) {
                 $testpaper['questions'] = $this->Question->query_question_for_testpaper($testpaper['chapter_id']);
                 unset($testpaper['keys']);
+                $testpaper['endtime'] = str_replace('-', '/', $testpaper['endtime']);
                 $data = $testpaper;
             } else {
                 $data = array(
@@ -67,8 +69,10 @@ class Paper extends CI_Controller
                 );
             }
             $chapter_id = $this->Accesscode->code_to_chapter_id($code);
+            if (!empty($chapter_id)) {
             $top = $this->Answer->query_top($chapter_id[0]['chapter_id'],$code);
             $data['top']=$top;
+            }
         } else {
             $data = array(
                 'errno' => 103,
@@ -83,18 +87,17 @@ class Paper extends CI_Controller
      * 返回答对数量，错误题号，该题的正确答案，以及班级前十名。
      */
     public function answer_compare()
-    {
-        if(!$_SESSION['student_id'])
-            die('{"errno":101,"error":"请先登录"}');
+    {        
+
         $accesscode= $this->input->post('accesscode');
         $as = $this->input->post('answer');
-
+$student_id = $this->input->post('student_id');
         if (empty($accesscode)||empty($as))
             die('{"errno":103,"error":"请将信息填写完整！"}');
 
         $testpaper = $this->cache->memcached->get($accesscode);
         if(empty($testpaper)) die('{"errno":104,"error":"该作业不存在或已超期"}');
-        if($this->Answer->query_test($_SESSION['student_id'],$testpaper['chapter_id'],$accesscode))
+        if($this->Answer->query_test($student_id,$testpaper['chapter_id'],$accesscode))
             die('{"errno":105,"error":"该作业您已提交过"}');
     
         $answer = array();
@@ -112,7 +115,7 @@ class Paper extends CI_Controller
                 $blanks = explode(',', $keys[$id]);
                 $flag = in_array($value, $blanks);
                 $data_answer[] = array(
-                    'student_id' => $_SESSION['student_id'],
+                    'student_id' => $student_id,
                     'accesscode' => $accesscode,
                     'question_id' => $id,
                     'answer' => $value,
@@ -130,7 +133,7 @@ class Paper extends CI_Controller
             } else {
                 $flag = ($value == $keys[$id]);
                 $data_answer[] = array(
-                    'student_id' => $_SESSION['student_id'],
+                    'student_id' => $student_id,
                     'accesscode' => $accesscode,
                     'question_id' => $id,
                     'answer' => $value,
@@ -149,7 +152,7 @@ class Paper extends CI_Controller
         }
     
         $testpaper = [
-            'student_id'=>$_SESSION['student_id'],
+            'student_id'=>$student_id,
             'chapter_id'=>$testpaper['chapter_id'],
             'accesscode'=>$accesscode,
             'time'=>date('Y-m-d H:i:s'),

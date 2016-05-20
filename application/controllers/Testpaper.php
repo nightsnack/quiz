@@ -14,7 +14,8 @@ class Testpaper extends CI_Controller
     function __construct()
     {
         parent::__construct();
-//         $_SESSION['unionid'] = $this->unionid;
+        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+        
         $this->load->model('QuestionModel', 'Question');
         $this->load->model('AnswerModel','Answer');
         $this->load->model('AccessCodeModel','Accesscode');

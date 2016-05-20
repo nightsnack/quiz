@@ -15,12 +15,12 @@ class Question extends CI_Controller
     function __construct()
     {
         parent::__construct();
-//         $_SESSION['unionid'] = $this->unionid;
+//         $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
         $this->load->model('QuestionModel', 'Question');
         $this->load->model('ChapterModel', 'Chapter');
+        date_default_timezone_set("Asia/Shanghai");
         
         $this->load->model('UserModel', 'User');
-        $this->checklogin();
     }
 
     function index($id = '')
@@ -53,6 +53,7 @@ class Question extends CI_Controller
 
     public function query_question()
     {
+        $this->checklogin();
         $chapter_id = $this->input->post('chapter_id');
         $res = $this->Question->query_question($chapter_id);
         if ($res) {
@@ -71,6 +72,7 @@ class Question extends CI_Controller
             } else {
                 $res[$i]['recent_sum'] = 1;
                 $res[$i]['recent_correct'] = 1;
+                $res[$i]['percentation'] = 100;
                 $res[$i]['percentation_re'] = 100;
             }
         }
@@ -79,6 +81,7 @@ class Question extends CI_Controller
 
     public function insert_question()
     {
+        $this->checklogin();
         $insert_data['chapter_id'] = $this->input->post('chapter_id');
         $insert_data['unionid'] = $_SESSION['unionid'];
         $insert_data['type'] = $this->input->post('type');
@@ -121,6 +124,7 @@ class Question extends CI_Controller
 
     public function delete_question()
     {
+        $this->checklogin();
         $id = $this->id;
         
         $res = $this->Question->query_one_question($id);
@@ -144,6 +148,7 @@ class Question extends CI_Controller
 
     public function show_update_question()
     {
+        $this->checklogin();
         $question_id = $this->input->post('question_id');
         
         $res = $this->Question->query_one_question($question_id);
@@ -158,6 +163,7 @@ class Question extends CI_Controller
      */
     public function update_question()
     {
+        $this->checklogin();
         $update_data['id'] = $this->input->post('question_id');
         $update_data['type'] = $this->input->post('type');
         $update_data['content'] = trim($this->input->post('content'));

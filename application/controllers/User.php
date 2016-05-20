@@ -59,12 +59,14 @@ class User extends CI_Controller
             $userinfo = $weixin->oauth2_get_user_info($oauth2_info['access_token'], $oauth2_info['openid']);
             $_SESSION['unionid'] = $userinfo['unionid'];
             $_SESSION['nickname'] = $userinfo['nickname'];
-            header('Location: http://fatimu.com/pop-quiz/');
+            header('Location: http://www.fatimu.com/pop-quiz/');
         }
     }
 
     function check_login()
     {
+        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+        
         if (! isset($_SESSION['unionid'])) {
             $data = array(
                 'errno' => 101,
@@ -95,10 +97,10 @@ class User extends CI_Controller
             foreach ($_SESSION as $key => $value) {
                 unset($_SESSION[$key]);
             }
-            header('Location: http://fatimu.com/pop-quiz/login.html');
+            header('Location: http://www.fatimu.com/pop-quiz/login.html');
             
         } else {
-            header('Location: http://fatimu.com/pop-quiz/');
+            header('Location: http://www.fatimu.com/pop-quiz/');
         }
     }
     
