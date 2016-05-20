@@ -1,0 +1,36 @@
+#courses .edit{
+	display:none;
+}
+
+#courses .editing .show{
+	display:none;
+}
+
+#courses .editing .edit{
+	display:block;
+}
+
+#courses .editing input{
+    position:absolute;
+
+z-index:1;
+width: 90%;
+	font-family: inherit;
+    color: black;
+}
+
+#divimg img{
+   max-width:100%;
+}
+
+.table tr td .edit {
+	display:none;
+}
+
+.editing .showw{
+	display:none!important;
+}
+
+.editing .edit{
+	display:block!important;;
+}

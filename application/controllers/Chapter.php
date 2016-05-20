@@ -14,7 +14,7 @@ class Chapter extends CI_Controller
     {
         parent::__construct();
         $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
-                $this->load->model('ChapterModel', 'Chapter');
+        $this->load->model('ChapterModel', 'Chapter');
         $this->load->model('CourseModel', 'Course');
         $this->load->model('UserModel','User');
         $this->checklogin();

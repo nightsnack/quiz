@@ -62,15 +62,15 @@ class Course extends CI_Controller
     public function query_course()
     {
         $res = $this->Course->query_course($_SESSION['unionid']);
-        echo json_encode($res, JSON_UNESCAPED_UNICODE);
+        $pass['res'] = $res;
+        $this->load->view('templates/header');
+	    $this->load->view('mycourse',$pass);
+	    $this->load->view('templates/footer');
     }
 
     public function insert_course()
     {
-        // echo $name = $this->input->post('name');
-        $input = file_get_contents("php://input");
-        $json = json_decode($input);
-        (! empty($json->name)) ? ($name = $json->name) : die('{"errno":103,"error":"请将信息填写完整！"}');
+        $name = $this->input->post('name');
         if ($name) {
             $data = array(
                 'name' => trim($name),
@@ -97,8 +97,7 @@ class Course extends CI_Controller
 
     public function delete_course()
     {
-        $id = $this->id;
-        // $id = $this->input->post('course_id');
+        $id = $this->input->post('course_id');
         $result = $this->Course->query_one_course($id);
         if ($result) {
             if ($result[0]['unionid'] !== $_SESSION['unionid']) 
@@ -119,12 +118,9 @@ class Course extends CI_Controller
 
     public function update_course()
     {
-        // $data['id'] = $this->input->post('course_id');
-        // $data['name'] = trim($this->input->post('name'));
-        $input = file_get_contents("php://input");
-        $json = json_decode($input);
-        (! empty($json->id)) ? ($data['id'] = $json->id) : die('{"errno":103,"error":"请将信息填写完整！"}');
-        (! empty($json->name)) ? ($data['name'] = $json->name) : die('{"errno":103,"error":"请将信息填写完整！"}');
+        $data['id'] = $this->input->post('course_id');
+        $data['name'] = trim($this->input->post('name'));
+   
         $result = $this->Course->query_one_course($data['id']);
         if ($result) {
             if ($result[0]['unionid'] !== $_SESSION['unionid']) 
