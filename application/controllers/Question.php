@@ -15,7 +15,7 @@ class Question extends CI_Controller
     function __construct()
     {
         parent::__construct();
-//         $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
         $this->load->model('QuestionModel', 'Question');
         $this->load->model('ChapterModel', 'Chapter');
         date_default_timezone_set("Asia/Shanghai");
@@ -23,21 +23,6 @@ class Question extends CI_Controller
         $this->load->model('UserModel', 'User');
     }
 
-    function index($id = '')
-    {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $this->id = $id;
-        $this->switchMethod($method);
-    }
-
-    private function switchMethod($method)
-    {
-        switch ($method) {
-            case 'DELETE':
-                $this->delete_question();
-                break;
-        }
-    }
 
     private function checklogin()
     {
@@ -51,15 +36,17 @@ class Question extends CI_Controller
         }
     }
 
-    public function query_question()
+    public function query_question($chapter_id)
     {
         $this->checklogin();
-        $chapter_id = $this->input->post('chapter_id');
         $res = $this->Question->query_question($chapter_id);
         if ($res) {
             if ($res[0]['unionid'] !== $_SESSION['unionid'])
                 die('{"errno":105,"error":"非法进入！"}');
         }
+        $result = $this->Chapter->query_one_chapter($chapter_id);
+        $pass['chapter_id']=$result[0]['id'];
+        $pass['chapter_name']=$result[0]['name'];
         $temp = $this->Question->query_recent_count($chapter_id);
         for ($i = 0; $i < count($res); $i ++) {
             $res[$i]['percentation'] = ($res[$i]['correct'] / $res[$i]['sum']) * 100;
@@ -76,7 +63,11 @@ class Question extends CI_Controller
                 $res[$i]['percentation_re'] = 100;
             }
         }
-        echo json_encode($res, JSON_UNESCAPED_UNICODE);
+        $pass['res'] = $res;
+//         echo json_encode($pass, JSON_UNESCAPED_UNICODE);
+        $this->load->view('templates/header');
+        $this->load->view('myquestion',$pass);
+        $this->load->view('templates/footer');
     }
 
     public function insert_question()
@@ -125,15 +116,14 @@ class Question extends CI_Controller
     public function delete_question()
     {
         $this->checklogin();
-        $id = $this->id;
-        
-        $res = $this->Question->query_one_question($id);
+        $question_id = $this->input->post('question_id');
+        $res = $this->Question->query_one_question($question_id);
         if ($res) {
             if ($res[0]['unionid'] !== $_SESSION['unionid'])
                 die('{"errno":105,"error":"非法进入！"}');
         }
 
-        if ($this->Question->delete_question($id)) {
+        if ($this->Question->delete_question($question_id)) {
             $data = array(
                 'errno' => 0
             );
@@ -146,17 +136,28 @@ class Question extends CI_Controller
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function show_update_question()
+    public function show_update_question($question_id)
     {
         $this->checklogin();
-        $question_id = $this->input->post('question_id');
         
         $res = $this->Question->query_one_question($question_id);
         if ($res) {
             if ($res[0]['unionid'] !== $_SESSION['unionid'])
                 die('{"errno":105,"error":"非法进入！"}');
-            echo json_encode($res[0], JSON_UNESCAPED_UNICODE);
+            $pass= $res[0];
+//              var_dump($pass);
+            $this->load->view('templates/editorheader');
+            $this->load->view('editor',$pass);
+            $this->load->view('templates/editorfooter');
         }
+    }
+    
+    public function show_insert_question($chapter_id)
+    {
+        $pass['chapter_id']=$chapter_id;
+        $this->load->view('templates/editorheader');
+        $this->load->view('neweditor',$pass);
+        $this->load->view('templates/editorfooter');
     }
 
     /**

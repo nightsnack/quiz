@@ -95,19 +95,24 @@ class Testpaper extends CI_Controller
     /**
      * 这个章节对应的所有提取码的详情以及这个提取码的答题学生详情
      */
-    public function mycode_result()
+    public function mycode_result($chapter_id)
     {
         $this->checklogin();
-        $chapter_id = $this->input->post('chapter_id');
         if (empty($chapter_id))
-            die('{"errno":103,"error":"请将信息填写完整！"}');
+            show_404();
+        $result = $this->Chapter->query_one_chapter($chapter_id);
+        $pass['chapter_name']=$result[0]['name'];
         $code_array = $this->Accesscode->query_accesscode($chapter_id);
         $data = array();
          foreach ($code_array as $code){
             $code['students'] = $this->Answer->query_accesscode_marks($code['accesscode']);
             $data[]=$code;
          }
-         echo json_encode($data, JSON_UNESCAPED_UNICODE);
+         $pass['res']=$data;
+//          var_dump($pass);
+         $this->load->view('templates/header');
+         $this->load->view('mycode',$pass);
+         $this->load->view('templates/footer');
     }
     
 }

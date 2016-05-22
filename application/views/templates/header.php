@@ -29,14 +29,12 @@
         <script src="<?php echo base_url('assets/js/bootstrap.min.js')?>" ></script>
         <script src="<?php echo base_url('assets/js/handlebars.min.js')?>" ></script>
         <script src="<?php echo base_url('assets/js/adminlte.js')?>" ></script>
-        <script src="<?php echo base_url('assets/js/kindeditor-all-min.js')?>" ></script>
-        <script src="<?php echo base_url('assets/js/zh_CN.js')?>" ></script>
         <script src="<?php echo base_url('assets/js/jquery-validation/jquery.validate.js')?>" ></script>
     
     
 </head>
 
-<body class="hold-transition skin-blue layout-boxed sidebar-mini">
+<body class="hold-transition skin-blue layout sidebar-mini">
     <!-- Site wrapper -->
     <div class="wrapper">
         <!-- Main Header -->

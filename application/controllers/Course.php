@@ -1,18 +1,7 @@
 <?php
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:GET, POST,PUT, OPTIONS, DELETE');
-header("Content-type: text/html;charset=utf-8");
-header("Access-Control-Allow-Credentials: true");
-header('Access-Control-Allow-Headers: X-Requested-With');
-header('Access-Control-Allow-Headers: Content-Type');
 
 class Course extends CI_Controller
 {
-
-//     private $unionid = 'admin';
-
-    private $id;
-
     function __construct()
     {
         parent::__construct();
@@ -22,30 +11,6 @@ class Course extends CI_Controller
         $this->checklogin();
     }
 
-    function index($id = '')
-    {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $this->id = $id;
-        $this->switchMethod($method);
-    }
-
-    private function switchMethod($method)
-    {
-        switch ($method) {
-            case 'GET':
-                $this->query_course();
-                break;
-            case 'PUT':
-                $this->update_course();
-                break;
-            case 'POST':
-                $this->insert_course();
-                break;
-            case 'DELETE':
-                $this->delete_course();
-                break;
-        }
-    }
 
     private function checklogin()
     {

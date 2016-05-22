@@ -35,7 +35,23 @@ class ExternalApi extends CI_Controller
         echo json_encode($res, JSON_UNESCAPED_UNICODE);
     }
     
-    
+    /**
+     * 这个章节对应的所有提取码的详情以及这个提取码的答题学生详情
+     */
+    public function mycode_result()
+    {
+        $this->checklogin();
+        $chapter_id = $this->input->post('chapter_id');
+        if (empty($chapter_id))
+            die('{"errno":103,"error":"请将信息填写完整！"}');
+        $code_array = $this->Accesscode->query_accesscode($chapter_id);
+        $data = array();
+        foreach ($code_array as $code){
+            $code['students'] = $this->Answer->query_accesscode_marks($code['accesscode']);
+            $data[]=$code;
+        }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
     
     
     

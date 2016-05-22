@@ -34,3 +34,11 @@ width: 90%;
 .editing .edit{
 	display:block!important;;
 }
+
+.box-header .box-title1 {
+  display: inline-block;
+  font-size: 18px;
+  padding-left: 8px;
+  margin: 0;
+  line-height: 2;
+}

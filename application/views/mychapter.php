@@ -2,12 +2,12 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
           <h1>
-我创建的课程         
-
+<?php echo $course_name;?>        
           </h1>
           <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> 控制台</a></li>
-            <li class="active">我的课程</li>
+            <li><a href="<?php echo site_url('Course/query_course')?>">课程：<?php echo $course_name;?></a></li>
+            <li class="active">章节列表</li>
           </ol>
         </section>
 
@@ -16,10 +16,10 @@
           <div class="row">
           
             <div class="col-md-12">
-              <div class="box">
+              <div class="box box-info">
                 <div class="box-header">
-                  <h3 class="box-title">我的课程列表</h3>
-                  <button style="position:absolute;left:70.5%;top:12%;width:12%;" class="btn btn-default btn-sm pull-right" id="newCourseModel">新增课程</button>
+                  <h3 class="box-title">章节列表</h3>
+                  <button style="position:absolute;left:70.5%;top:12%;width:12%;" class="btn btn-info btn-sm pull-right" id="newChapterModel">新增章节</button>
                 </div><!-- /.box-header -->
                 <div class="box-body no-padding">
                   <table class="table table-striped">
@@ -37,9 +37,9 @@
                     </td>
                       <td>
                          <div class="btn-group">
-                          <button type="button" id="edit" class="btn btn-default"><i class="fa fa-edit"></i></button>
-                          <button type="button" attr="<?php echo $item['id']?>" id="delete" class="btn btn-default"><i class="fa fa-trash"></i></button>
-                          <button type="button" attr="<?php echo $item['id']?>" id="detail" class="btn btn-default"><i class="fa fa-list-ul"></i></button>
+                          <button type="button" id="edit" class="btn btn-info"><i class="fa fa-edit"></i></button>
+                          <button type="button" attr="<?php echo $item['id']?>" id="delete" class="btn btn-info"><i class="fa fa-trash"></i></button>
+                          <button type="button" attr="<?php echo $item['id']?>" id="detail" class="btn btn-info"><i class="fa fa-list-ul"></i></button>
                         </div>
                      </td>
                     </tr>
@@ -54,17 +54,17 @@
         </section><!-- /.content -->
       </div>
       
-      <div class="modal fade" id="newCourse" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal fade" id="newChapter" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
            <form role="form" id="insertForm" method="post">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">新增课程</h4>
+                <h4 class="modal-title" id="myModalLabel">新增章节</h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="name">课程名称：</label>
+                    <label for="name">章节名称：</label>
                     <input class="form-control" type="text" name="name" id="name" value="" required>
                 </div>
             </div>
@@ -88,19 +88,20 @@
     	  $("input.edit").blur(function(event){
         	  if($(event.currentTarget).val()=='')
         	  {
-            	  alert("请填写课程名称");    
+            	  alert("请填写章节名称");    
             	  return false;
         	  }
         	  var id = $(event.currentTarget).attr("attr");
         	  var name = $(event.currentTarget).val();
               $.ajax({
                   type: 'POST',
-                  url: "<?php echo site_url('Course/update_course')?>",
+                  url: "<?php echo site_url('Chapter/update_chapter')?>",
                   data:{
-                      course_id:id,
+                      chapter_id:id,
                       name:name
                       },
                       success: function (data) {
+                      
                       $(event.currentTarget).next().text(name);    
                   },
                   dataType: 'json'
@@ -110,12 +111,12 @@
 
     	  $("button#delete").on("click",function(event){
     		  var id = $(event.currentTarget).attr("attr");
-    		  if(confirm("您确定删除课程吗？删除后对应章节和题目会一并删除！")){
+    		  if(confirm("您确定删除章节吗？删除后对应题目会一并删除！")){
     		  $.ajax({
                   type: 'POST',
-                  url: "<?php echo site_url('Course/delete_course')?>",
+                  url: "<?php echo site_url('Chapter/delete_chapter')?>",
                   data:{
-                      course_id:id,
+                      chapter_id:id,
                       },
                       success: function (data) {
                       if (data.errno!==0) {
@@ -129,8 +130,8 @@
     		  }     
     	});
 
-        $("button#newCourseModel").on("click",function(event){
-        	$('#newCourse').modal('show');
+        $("button#newChapterModel").on("click",function(event){
+        	$('#newChapter').modal('show');
             
     	});
 
@@ -138,14 +139,15 @@
             submitHandler: function() {
             	$.ajax({
                     type: 'POST',
-                    url: "<?php echo site_url('Course/insert_course')?>",
+                    url: "<?php echo site_url('Chapter/insert_chapter')?>",
                     data:{
+                    	course_id:<?php echo $course_id;?>,
                         name:$("#name").val()
                         },
                         success: function (data) {
                         	if(data.errno==0)
                             {
-                                $('#newCourse').modal('hide');
+                                $('#newChapter').modal('hide');
                                 alert("添加成功!");
                                 location.reload();  
                             }
@@ -162,7 +164,7 @@
 
         $("button#detail").on("click",function(event){
         	var course_id = $(event.currentTarget).attr("attr");
-        	window.location.href=("<?php echo site_url('Chapter/query_chapter').'/'?>"+course_id);
+        	window.location.href=("<?php echo site_url('Question/query_question').'/'?>"+course_id);
             
     	});
         
@@ -170,3 +172,4 @@
       });
       
       </script>
+      
