@@ -50,6 +50,12 @@ class CourseModel extends CI_Model
         $query = $this->db->get($this->table)->result_array();
         return $query;
     }
+    
+    public function insert_course_for_share($data)
+    {
+        $this->db->insert($this->table,$data);
+        return $this->db->insert_id();
+    }
 }
 
 ?>

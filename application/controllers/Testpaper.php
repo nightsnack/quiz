@@ -8,18 +8,16 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 class Testpaper extends CI_Controller
 {
-
-//     private $unionid = 'oIv6js6DeLN83bRCz-1oefOycwl8';
-
     function __construct()
     {
         parent::__construct();
-        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+//         $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
         
         $this->load->model('QuestionModel', 'Question');
         $this->load->model('AnswerModel','Answer');
         $this->load->model('AccessCodeModel','Accesscode');
         $this->load->model('UserModel','User');
+        $this->load->model('CourseModel', 'Course');
         $this->load->model('ChapterModel', 'Chapter');
         $this->load->driver('cache');
 
@@ -82,7 +80,7 @@ class Testpaper extends CI_Controller
             'end_time' => $endtime
         ];
         $this->Accesscode->insert_accesscode($accesscode_data);
-        $testpaper = $this->cache->memcached->get($code);
+//         $testpaper = $this->cache->memcached->get($code);
         
         $data = array(
             'errno' => 0,
@@ -91,7 +89,65 @@ class Testpaper extends CI_Controller
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     
+    public function share_question()
+    {
+        $endtime = $this->input->get('endtime');
+        $chapter_id = $this->input->get('chapter_id');
+        $this->checklogin();
+        $result = $this->Chapter->query_one_chapter($chapter_id);
+        if ($result) {
+            if ($result[0]['unionid'] !== $_SESSION['unionid'])
+                die('{"errno":105,"error":"非法进入！"}');
+        }
+        $course_id = $result[0]['course_id'];
+        $result_course = $this->Course->query_one_course($course_id);
+        $res = $this->Question->query_question_for_share($chapter_id);
+//         var_dump($res);
+        $lasttime = floor((strtotime($endtime) - strtotime("now")));
+        $memory_data = array(
+            'course_name'=>$result_course[0]['name'],
+            'chapter_name' => $result[0]['name'],
+            'createtime' => date('Y-m-d H:i:s'),
+            'endtime' => $endtime,
+            'question' => $res
+        );
+        echo $code = time();
+        $this->cache->memcached->save($code, $memory_data, $lasttime);
 
+        $testpaper = $this->cache->memcached->get($code);
+        var_dump($testpaper);
+   
+    }
+
+    /**
+     * 添加分享的题目，及对应课程和章节
+     * @param unknown $code
+     */
+    public function add_share($code)
+    {
+        $share_test = $this->cache->memcached->get($code);
+        $course_data = array(
+            'name' => trim($share_test['course_name']),
+            'unionid' => $_SESSION['unionid']
+        );
+        $course_id = $this->Course->insert_course_for_share($course_data);
+        $chapter_data = array(
+            'name' => $share_test['chapter_name'],
+            'unionid'=>$_SESSION['unionid'],
+            'course_id' => $course_id
+        );
+        $chapter_id = $this->Chapter->insert_chapter_for_share($chapter_data);
+        $temp = array();
+        foreach ($share_test['question'] as $question)
+        {
+            $question['chapter_id'] = $chapter_id;
+            $question['unionid'] = $_SESSION['unionid'];
+            $temp[] = $question;
+        }
+        $this->Question->insert_question_for_share($temp);
+        redirect(site_url("Question/query_question/$chapter_id"));
+    }
+    
     /**
      * 这个章节对应的所有提取码的详情以及这个提取码的答题学生详情
      */
@@ -109,8 +165,8 @@ class Testpaper extends CI_Controller
             $data[]=$code;
          }
          $pass['res']=$data;
-//          var_dump($pass);
-         $this->load->view('templates/header');
+         $head = array('sidebar'=>2);
+	     $this->load->view('templates/header',$head);
          $this->load->view('mycode',$pass);
          $this->load->view('templates/footer');
     }

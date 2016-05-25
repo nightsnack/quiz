@@ -31,6 +31,20 @@ class QuestionModel extends CI_Model
     }
     
     /**
+     * 查询该章节全部问题，全部字段
+     * @param unknown $chapter_id
+     * @return unknown
+     */
+    public function query_question_for_share($chapter_id)
+    {
+        $this->db->select('type,content,answer');
+        $this->db->from("$this->table");
+        $this->db->where('chapter_id',$chapter_id);
+        $query = $this->db->get()->result_array();
+        return $query;
+    }
+    
+    /**
      * 查询单个题
      * @param unknown $question_id
      * @return unknown
@@ -59,6 +73,12 @@ class QuestionModel extends CI_Model
     public function insert_question($data)
     {
         $this->db->insert($this->table,$data);
+        return $this->db->affected_rows();
+    }
+    
+    public function insert_question_for_share($data)
+    {
+        $this->db->insert_batch($this->table,$data);
         return $this->db->affected_rows();
     }
     

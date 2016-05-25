@@ -52,18 +52,18 @@
             <nav class="navbar navbar-static-top" role="navigation">
                 <!-- Sidebar toggle button-->
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">导航</span>
                 </a>
                 <!-- Navbar Right Menu -->
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav" id="pagehead">
                         <li class="dropdown user user-menu">
                             <a class="dropdown-toggle">
-                                <span class="hidden-xs"><b>欢迎您</b></span>
+                                <span class="hidden-xs"><b>欢迎您,<?php echo $_SESSION['nickname']?></b></span>
                             </a>
                         </li>
                         <li>
-                            <a href="../quiz/index.php/User/logout" id='logout'><i class="fa fa-sign-out fa-lg"></i></a>
+                            <a href="<?php echo site_url('User/logout')?>" id='logout'><i class="fa fa-sign-out fa-lg"></i></a>
                         </li>
                     </ul>
                 </div>
@@ -77,9 +77,9 @@
                 <ul class="sidebar-menu">
                     <li class="header">服务列表</li>
                     <!-- Optionally, you can add icons to the links -->
-                    <li><a href="javascript:void(0)"><i class="fa fa-dashboard"></i> <span>控制台</span></a></li>
+                    <li <?php if ($sidebar == 1) echo "class='active'"?>><a href="<?php echo site_url()?>"><i class="fa fa-dashboard"></i> <span>控制台</span></a></li>
                     
-                    <li><a href="<?php echo site_url('Course/query_course')?>"><i class="fa fa-briefcase"></i> <span>我的课程</span></a>
+                    <li <?php if ($sidebar == 2) echo "class='active'"?>><a href="<?php echo site_url('Course/query_course')?>"><i class="fa fa-briefcase"></i> <span>我的课程</span></a>
 
                     </li>
                     

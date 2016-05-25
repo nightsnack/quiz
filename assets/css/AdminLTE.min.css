@@ -2699,7 +2699,7 @@ table.text-center th {
   -ms-transform: translate(0, 0);
   -o-transform: translate(0, 0);
   transform: translate(0, 0);
-  padding: 10px;
+  padding: 18px;
   height: 250px;
   overflow: auto;
 }

@@ -6,7 +6,7 @@
         <section class="content-header">
     <h1>
             控制台
-            <small>欢迎您</small>
+            <small>欢迎您 <?php echo $nickname;?>!</small>
     </h1>
         </section>
 

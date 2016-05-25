@@ -5,8 +5,8 @@ class Course extends CI_Controller
     function __construct()
     {
         parent::__construct();
-        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
-                $this->load->model('CourseModel', 'Course');
+//         $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+        $this->load->model('CourseModel', 'Course');
         $this->load->model('UserModel', 'User');
         $this->checklogin();
     }
@@ -15,12 +15,7 @@ class Course extends CI_Controller
     private function checklogin()
     {
         if (!isset($_SESSION['unionid'])) {
-            $data = array(
-                'errno' => 101,
-                'error' => '请先登录'
-            );
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);
-            die();
+            redirect(site_url('User/show_login'));
         }
     }
 
@@ -28,7 +23,8 @@ class Course extends CI_Controller
     {
         $res = $this->Course->query_course($_SESSION['unionid']);
         $pass['res'] = $res;
-        $this->load->view('templates/header');
+        $head = array('sidebar'=>2);
+	    $this->load->view('templates/header',$head);
 	    $this->load->view('mycourse',$pass);
 	    $this->load->view('templates/footer');
     }

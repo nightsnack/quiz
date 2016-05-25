@@ -6,7 +6,7 @@ class Chapter extends CI_Controller
     function __construct()
     {
         parent::__construct();
-        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+//         $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
         $this->load->model('ChapterModel', 'Chapter');
         $this->load->model('CourseModel', 'Course');
         $this->load->model('UserModel','User');
@@ -36,7 +36,8 @@ class Chapter extends CI_Controller
         }
         $res = $this->Chapter->query_chapter($course_id);
         $pass['res']=$res;
-        $this->load->view('templates/header');
+        $head = array('sidebar'=>2);
+	    $this->load->view('templates/header',$head);
 	    $this->load->view('mychapter',$pass);
 	    $this->load->view('templates/footer');
     }

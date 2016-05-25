@@ -20,34 +20,16 @@ class User extends CI_Controller
         $this->load->driver('cache');
         date_default_timezone_set("Asia/Shanghai");
     }
-
-    function register_user()
+    
+    function show_login($sharecode = 0)
     {
-        $data['unionid'] = $_SESSION['unionid'];
-        $data['student_id'] = $this->input->post('student_id');
-        $data['name'] = $this->input->post('name');
-        if ($data['unionid'] && $data['student_id'] && $data['name']) {
-            
-            if ($this->User->insert_user($data)) {
-                $data = array(
-                    'errno' => 0
-                );
-            } else {
-                $data = array(
-                    'errno' => 102,
-                    'error' => '新增失败，请再次尝试！'
-                );
-            }
-        } else {
-            $data = array(
-                'errno' => 103,
-                'error' => '请将信息填写完整！'
-            );
-        }
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        $pass = array(
+            'code'=>$sharecode
+        );
+        $this->load->view('login',$pass);
     }
 
-    function index()
+    function index($sharecode=0)
     {
         $weixin = new class_weixin();
         if (! isset($_GET["code"])) {
@@ -59,36 +41,12 @@ class User extends CI_Controller
             $userinfo = $weixin->oauth2_get_user_info($oauth2_info['access_token'], $oauth2_info['openid']);
             $_SESSION['unionid'] = $userinfo['unionid'];
             $_SESSION['nickname'] = $userinfo['nickname'];
-            header('Location: http://www.fatimu.com/pop-quiz/');
-        }
-    }
+            $url = site_url('');
+            if (!empty($sharecode)) 
+                $url.= "?sharecode=$sharecode";
 
-    function check_login()
-    {
-        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
-        
-        if (! isset($_SESSION['unionid'])) {
-            $data = array(
-                'errno' => 101,
-                'error' => '请先登录'
-            );
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);
-            die();
+            redirect($url);
         }
-        $user_info = $this->User->user_info($_SESSION['unionid']);
-        if (empty($user_info)) {
-            $insertdata = array(
-                'unionid' => $_SESSION['unionid'],
-                'nickname' => $_SESSION['nickname'],
-                'createtime' => date('Y-m-d H:i:s')
-            );
-            $this->User->insert_user($insertdata);
-        }
-        $data = array(
-            'detail' => $_SESSION['nickname']
-        );
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-        die();
     }
     
     function logout()
@@ -97,10 +55,10 @@ class User extends CI_Controller
             foreach ($_SESSION as $key => $value) {
                 unset($_SESSION[$key]);
             }
-            header('Location: http://www.fatimu.com/pop-quiz/login.html');
+            redirect(site_url());
             
         } else {
-            header('Location: http://www.fatimu.com/pop-quiz/');
+            redirect(site_url());
         }
     }
     

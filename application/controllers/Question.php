@@ -15,7 +15,7 @@ class Question extends CI_Controller
     function __construct()
     {
         parent::__construct();
-        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+//         $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
         $this->load->model('QuestionModel', 'Question');
         $this->load->model('ChapterModel', 'Chapter');
         date_default_timezone_set("Asia/Shanghai");
@@ -45,6 +45,7 @@ class Question extends CI_Controller
                 die('{"errno":105,"error":"非法进入！"}');
         }
         $result = $this->Chapter->query_one_chapter($chapter_id);
+        if (empty($result)) show_404();
         $pass['chapter_id']=$result[0]['id'];
         $pass['chapter_name']=$result[0]['name'];
         $temp = $this->Question->query_recent_count($chapter_id);
@@ -64,8 +65,8 @@ class Question extends CI_Controller
             }
         }
         $pass['res'] = $res;
-//         echo json_encode($pass, JSON_UNESCAPED_UNICODE);
-        $this->load->view('templates/header');
+        $head = array('sidebar'=>2);
+	    $this->load->view('templates/header',$head);
         $this->load->view('myquestion',$pass);
         $this->load->view('templates/footer');
     }
