@@ -91,9 +91,12 @@ class Testpaper extends CI_Controller
     
     public function share_question()
     {
-        $endtime = $this->input->get('endtime');
-        $chapter_id = $this->input->get('chapter_id');
+        $endtime = $this->input->post('endtime');
+        $chapter_id = $this->input->post('chapter_id');
         $this->checklogin();
+        $lasttime = floor((strtotime($endtime) - strtotime("now")));
+        if ($lasttime < 0)
+            die('{"errno":103,"error":"时间错误"}');
         $result = $this->Chapter->query_one_chapter($chapter_id);
         if ($result) {
             if ($result[0]['unionid'] !== $_SESSION['unionid'])
@@ -111,12 +114,15 @@ class Testpaper extends CI_Controller
             'endtime' => $endtime,
             'question' => $res
         );
-        echo $code = time();
+        $code = time();
         $this->cache->memcached->save($code, $memory_data, $lasttime);
-
-        $testpaper = $this->cache->memcached->get($code);
-        var_dump($testpaper);
-   
+        $url = site_url().'?sharecode='.$code;
+        $pass=array(
+            'errno' => 0,
+            'url'=>$url
+        );
+        echo json_encode($pass, JSON_UNESCAPED_UNICODE);
+        
     }
 
     /**

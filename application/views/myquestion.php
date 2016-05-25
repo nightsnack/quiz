@@ -1,4 +1,5 @@
-<div class="content-wrapper">
+
+ <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
           <h1>
@@ -20,7 +21,7 @@
           <a class="btn btn-app" href="<?php echo site_url("Testpaper/mycode_result/$chapter_id")?>">
             <i class="fa fa-barcode"></i> 我的提取码
           </a>
-          <a class="btn btn-app" href="">
+          <a class="btn btn-app" id="shareQuestion">
             <i class="fa fa-share-alt"></i> 分享本章
           </a>
         </div>
@@ -79,7 +80,36 @@
         </section><!-- /.content -->
       </div>
       
+<div class="modal fade" id="shareModal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               在过期时间前,您分享的题目都可以被拿到分享链接的人克隆。
+            </h4>
+         </div>
+         <div class="modal-body">
 
+           <label for="date-info" style="margin-bottom: 10px;">请设定过期时间</label>
+          <input class="form-control" id="dateinfo" type="text" placeholder="请选择过期时间" readonly>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <button type="button" class="btn btn-primary" id="requestShare">
+               确定
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+</div>
+ <script src="<?php echo base_url('assets/js/jedate/jedate.min.js')?>" ></script>
       
       <script>
       $(document).ready(function(){
@@ -114,8 +144,48 @@
     		  window.open ('<?php echo site_url('Question/show_insert_question').'/'.$chapter_id;?>', 'newwindow', 'height=600, width=1000, top=0, left=200, toolbar=no, menubar=no, scrollbars=no,location=no, status=no')  
               
     	});
+    	
+        $("a#shareQuestion").on("click",function(){
+    		$("#shareModal").modal('show');
+    	});
 
+        $("button#requestShare").on("click",function(event){
+            var endtime = $("#dateinfo").val();
+        	$.ajax({
+                type: 'POST',
+                url: "<?php echo site_url('Testpaper/share_question')?>",
+                data:{
+                    chapter_id:<?php echo $chapter_id?>,
+                    endtime:endtime
+                    },
+                    success: function (data) {
+                    if (data.errno!==0) {
+                        alert(data.error);
+                        return false;
+                    }
+                    $(".modal-body").append('<hr><label style="margin-bottom: 10px;">请牢记此链接，将此链接发送给想要分享的人!</label><textarea class="form-control"  type="text">'+data.url+'</textarea>');
+                    $("button#requestShare").hide();
+                },
+                dataType: 'json'
+            });
+    	});
+        
       });
       
+      jeDate({
+          dateCell: "#dateinfo",
+          format: "YYYY-MM-DD hh:mm:ss",
+          isinitVal: true,
+          isTime: true, //isClear:false,
+          minDate: "2016-03-19 00:00:00",
+          okfun: function(val) {
+              alert(val)
+          }
+      })
       </script>
-      
+       <style type="text/css">
+ .jedatebox
+ {
+ 	z-index:99999!important;
+ }
+ </style>

@@ -23,10 +23,13 @@ class User extends CI_Controller
     
     function show_login($sharecode = 0)
     {
-        $pass = array(
-            'code'=>$sharecode
-        );
-        $this->load->view('login',$pass);
+        $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+        $_SESSION['nickname']="吃夜宵";
+        redirect(site_url());
+//         $pass = array(
+//             'code'=>$sharecode
+//         );
+//         $this->load->view('login',$pass);
     }
 
     function index($sharecode=0)
