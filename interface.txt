@@ -1,0 +1,440 @@
+er：
+1.User/register_user
+请求参数：
+student_id: 学号或用户名
+name:   学生姓名
+
+返回
+{“errno”:0}成功
+——————————————————————————————————————————————————————————————————————————————————————————
+Course：课程
+1.Course/query_course
+请求参数：无
+
+返回：
+[
+{
+    "id": "1",
+        "name": "算法设计"
+          
+},
+{
+    "id": "2",
+        "name": "软件工程"
+          
+}
+
+]
+
+
+
+2.Course/insert_course
+请求参数：
+name:课程名字
+
+返回
+{"errno”:0}成功
+
+
+
+3.Course/delete_course
+请求参数：
+course_id:课程id(上面返回的id)
+
+返回
+{"errno”:0}成功
+
+
+
+4.Course/update_course
+请求参数：
+course_id:课程id(上面返回的id)
+name:更改过的课程名
+
+返回
+{"errno”:0}成功
+
+——————————————————————————————————————————————————————————————————————————————————————————
+
+Chapter：章节
+1.Chapter/query_chapter
+请求参数：
+course_id:课程id
+
+返回
+{
+  "course_id": "1",        //这个course_id返回来便于 insert时带上这个参数发送
+      "res": [
+      {
+            "id": "1",
+                  "name": "第一章绪论"
+                      
+      },
+      {
+            "id": "2",
+                  "name": "第二章算法基础"
+                      
+      },
+      {
+            "id": "3",
+                  "name": "原子弹制造第一课时"
+                      
+      }
+        
+      ]
+
+}
+
+
+2.Chapter/insert_chapter
+请求参数：
+course_id:课程id
+name:章节名称
+
+返回
+{"errno":0}
+
+
+3.Chapter/delete_chapter
+请求参数：
+chapter_id:章节id（上面返回的）
+
+返回
+{"errno":0}
+
+
+4.Chapter/update_chapter
+请求参数：
+chapter_id:章节id（上面返回的）
+name:修改过的章节名称
+
+返回
+{"errno":0}
+
+——————————————————————————————————————————————————————————————————————————————————————————
+
+Question
+
+1.Question/query_question
+请求参数
+chapter_id：章节id
+
+返回
+{
+  "chapter_id": "1",     //便于更新问题的时候带上参数
+      "res": [
+      {
+            "id": "1",         //题目id
+                  "chapter_id": "1", //章节id
+                        "type": "0",       //问题的类型 0为选择，1为判断，2为填空
+                              "content_type": "0",    //问题内容类型  0为文字，1为图片
+                                    "content": "以下算法的时间复杂度为（ ）。void fun(int n) {\n    int i=l;\n    while(i<=n)\n        i=i*2;\n} A. O(n)    B. O(n2)    C. O(nlog2n)    D. O(log2n)",
+                                          "answer": "D",      //答案
+                                                "sum": "17",        //总共答题人数
+                                                      "correct": "1",     //总共正确人数
+                                                            "recent_sum": "1",  //最近一个提取码的卷子的答题人数
+                                                                  "recent_correct": "0"   //最近一个提取码的卷子的答对人数
+                                                                      
+      },
+      {
+            "id": "6",          
+                  "chapter_id": "1",
+                        "type": "0",
+                              "content_type": "0",
+                                    "content": "以下算法的时间复杂度为（ ）。void fun(int n) {\n    int i=l;\n    while(i<=n)\n        i=i*2;\n} A. O(n)    B. O(n2)    C. O(nlog2n)    D. O(log2n)",
+                                          "answer": "D",
+                                                "sum": "17",
+                                                      "correct": "17",
+                                                            "recent_sum": "1",
+                                                                  "recent_correct": "1"
+                                                                      
+      }
+        
+      ]
+
+}
+
+
+2.Question/insert_question
+请求参数
+chapter_id：章节id
+type：问题的类型 0为选择，1为判断，2为填空
+content_type：问题内容类型  0为文字，1为图片
+content：问题内容 和 选项的内容
+answer：答案。选择题为ABCD��  判断为T、F  填空为固定文字或多个答案由  , 分隔开 如 基础,基石,原理
+  
+  返回
+  {"errno”:0}成功
+  
+  
+  3.Question/delete_question
+  请求参数
+  question_id：问题id
+  
+  返回
+  {"errno”:0}成功
+  
+  
+  4.Question/show_update_question 展示更新页面
+  请求参数
+  question_id：问题id
+  
+  返回
+{
+  "id": "3",
+    "chapter_id": "1",
+      "type": "2",
+        "content_type": "0",
+          "content": "最长公共子序列算法利用的算法是____",
+            "answer": "动态规划,动态规划法,规划法动态"
+
+}
+
+
+5.Question/update_question
+不允许更新的：题目类型（type）
+
+请求参数：
+question_id：问题id
+content_type：内容类型
+content：问题内容 和 选项的内容
+answer：答案。选择题为ABCD��  判断为T、F  填空为固定文字或多个答案由  , 分隔开 如 基础,基石,原理
+
+返回
+{"errno”:0}成功
+
+——————————————————————————————————————————————————————————————————————————————————————————
+
+Testpaper：答卷及其相关内容
+
+1.Testpaper/create_testpaper
+请求参数：
+chapter_id：章节id
+endtime：该试卷过期时间 数据库datetime类型 2016-3-18 20:25:15
+
+返回：
+{"errno":0,"accesscode":"284605"}  提取码284605
+
+
+2.Testpaper/get_testpaper
+请求参数：
+accesscode：提取码（6位）
+
+返回：
+{
+  "chapter_id": "1",
+    "createtime": "2016-03-18 15:07:32",
+      "endtime": "2016-3-18 20:25:15",
+      "questions": [
+      {
+            "id": "1",
+                  "type": "0",
+                        "content_type": "0",
+                              "content": "以下算法的时间复杂度为（ ）。void fun(int n) {\n    int i=l;\n    while(i<=n)\n        i=i*2;\n} A. O(n)    B. O(n2)    C. O(nlog2n)    D. O(log2n)"
+                                  
+      },
+      {
+            "id": "2",
+                  "type": "0",
+                        "content_type": "1",
+                              "content": "129.jpg"
+                                  
+      },
+      {
+            "id": "8",
+                  "type": "0",
+                        "content_type": "0",
+                              "content": "以下算法的时间复杂度为（ ）。void fun(int n) {\n    int i=l;\n    while(i<=n)\n        i=i*2;\n} A. O(n)    B. O(n2)    C. O(nlog2n)    D. O(log2n)"
+                                  
+      }
+        
+      ]
+
+}
+
+
+2.Testpaper/answer_compare   用于提交答案，返回答对数量，错误题号，该题的正确答案，以及班级前十名。
+可以接受raw格式的请求。请求中的题号必须和上一个接口返回的一致，顺序一致，数量一致，要不校验会出错
+题目不答全不允许提交
+请求参数：
+{
+    "accesscode":"284852",
+        "answer":[
+                {"1":"A"},
+                        {"2":"A"},
+                                {"3":"动态规划"},
+                                        {"6":"D"},
+                                                {"7":"G"},
+                                                        {"8":"D"},
+                                                                {"9":"A"}
+                                                                    
+        ]
+
+}
+
+返回：
+{
+  "correct": 4,  答对数量
+    "top": [       前十名（这张卷子只有一个人答了）
+    {
+          "student_id": "B88888888",
+                "name": "吃夜宵",
+                      "right": "4",
+                            "time": "2016-03-18 15:10:07"
+                                
+    }
+      ],
+        "wrong": [     
+        {
+              "question_position": 1,
+                    "correct": "D"
+                        
+        },
+        {
+              "question_position": 5,
+                    "correct": "A"
+                        
+        },
+        {
+              "question_position": 7,
+                    "correct": "D"
+                        
+        }
+          ]
+
+}
+
+答错的题号（这个题号和那个题目id不一样，上面返回的第五个题，题目id是100，但题号是5，这里的题号对应那个5）
+以及那些错的题的正确答案
+
+2.Testpaper/mycode_result 查询我在本章生成的所有提取码，以及各提取码的答题详情
+参数
+chapter_id：章节id
+
+返回
+[
+{
+    "accesscode": "050861",
+        "create_time": "2016-03-15 16:57:42",   //已经排过序了，按这个排的
+            "end_time": "2016-03-15 22:57:51",     //过期时间
+                "students": [                         //这里是答过题的学生详情
+                {
+                        "student_id": "admin",            
+                                "name": "大柱",
+                                        "time": "0000-00-00 00:00:00",
+                                                "right": "5",
+                                                        "all": "6"
+                                                              
+                }
+                    ]
+                      
+},
+{
+    "accesscode": "134474",
+        "create_time": "2016-03-16 16:58:37",
+            "end_time": "2016-03-16 21:58:41",
+            "students": [
+            {
+                    "student_id": "admin",             //学生详情按学号排序过了
+                            "name": "大柱",
+                                    "time": "2016-03-15 00:00:00",     //答题时间
+                                            "right": "1",                      //答对数量
+                                                    "all": "6"                         //试卷总题数
+                                                          
+            },
+            {
+                    "student_id": "B03030303",
+                            "name": "毛驴",
+                                    "time": "2016-03-16 16:55:56",
+                                            "right": "6",
+                                                    "all": "6"
+                                                          
+            },
+            {
+                    "student_id": "B11111111",
+                            "name": "蔡宇轩",
+                                    "time": "2016-03-16 07:00:00",
+                                            "right": "6",
+                                                    "all": "6"
+                                                          
+            },
+            {
+                    "student_id": "B66666666",
+                            "name": "二狗",
+                                    "time": "2016-03-16 00:00:00",
+                                            "right": "4",
+                                                    "all": "6"
+                                                          
+            },
+            {
+                    "student_id": "B88888888",
+                            "name": "吃夜宵",
+                                    "time": "2016-03-16 21:25:16",
+                                            "right": "4",
+                                                    "all": "6"
+                                                          
+            }
+                
+            ]
+              
+},
+{
+    "accesscode": "054842",
+        "create_time": "2016-03-17 20:21:27",
+            "end_time": "2016-03-19 23:25:15",
+            "students": [
+            {
+                    "student_id": "admin",
+                            "name": "大柱",
+                                    "time": "0000-00-00 00:00:00",
+                                            "right": "5",
+                                                    "all": "6"
+                                                          
+            }
+                
+            ]
+              
+},
+{
+    "accesscode": "266181",
+        "create_time": "2016-03-18 09:56:21",
+            "end_time": "2016-03-18 10:25:15",
+            "students": [
+            {
+                    "student_id": "B88888888",
+                            "name": "吃夜宵",
+                                    "time": "2016-03-18 10:00:10",
+                                            "right": "4",
+                                                    "all": "7"
+                                                          
+            }
+                
+            ]
+              
+},
+{
+    "accesscode": "284605",
+        "create_time": "2016-03-18 15:03:25",
+            "end_time": "2016-03-18 20:25:15",
+                "students": []                             //没有学生答过就填充空数组
+                  
+},
+{
+    "accesscode": "284852",
+        "create_time": "2016-03-18 15:07:32",
+            "end_time": "2016-03-18 20:25:15",
+            "students": [
+            {
+                    "student_id": "B88888888",
+                            "name": "吃夜宵",
+                                    "time": "2016-03-18 15:10:07",
+                                            "right": "4",
+                                                    "all": "7"
+                                                          
+            }
+                
+            ]
+              
+}
+
+]"}"}"}"}
