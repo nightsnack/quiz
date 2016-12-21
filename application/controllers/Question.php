@@ -27,12 +27,8 @@ class Question extends CI_Controller
     private function checklogin()
     {
         if (!isset($_SESSION['unionid'])) {
-            $data = array(
-                'errno' => 101,
-                'error' => '请先登录'
-            );
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);
-            die();
+               redirect(site_url('User/show_login'));
+            
         }
     }
 

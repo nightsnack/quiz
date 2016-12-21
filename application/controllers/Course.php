@@ -6,8 +6,14 @@ class Course extends CI_Controller
     {
         parent::__construct();
 //         $_SESSION['unionid']="oIv6js6DeLN83bRCz-1oefOycwl8";
+        $this->load->model('QuestionModel', 'Question');
+        $this->load->model('AnswerModel','Answer');
+        $this->load->model('AccessCodeModel','Accesscode');
+        $this->load->model('UserModel','User');
         $this->load->model('CourseModel', 'Course');
-        $this->load->model('UserModel', 'User');
+        $this->load->model('ChapterModel', 'Chapter');
+        $this->load->driver('cache');
+        date_default_timezone_set("Asia/Shanghai");
         $this->checklogin();
     }
 
@@ -100,6 +106,80 @@ class Course extends CI_Controller
         }
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+    
+    public function share_course()
+    {
+        $endtime = $this->input->post('endtime');
+        $course_id = $this->input->post('course_id');
+        $this->checklogin();
+        $lasttime = floor((strtotime($endtime) - strtotime("now")));
+        if ($lasttime < 0)
+            die('{"errno":103,"error":"时间错误"}');
+        $course_result = $this->Course->query_one_course($course_id);
+                if ($course_result) {
+            if ($course_result[0]['unionid'] !== $_SESSION['unionid'])
+                die('{"errno":105,"error":"非法进入！"}');
+        }
+        $chapter_result_temp = $this->Chapter->query_chapter($course_id);
+        foreach ($chapter_result_temp as $key=>$chapter_one)
+        {
+            $question = $this->Question->query_question_for_share($chapter_one['id']);
+
+                $chapter_result_temp[$key]['question'] = $question;
+        }
+
+        $lasttime = floor((strtotime($endtime) - strtotime("now")));
+        $memory_data = array(
+            'course_name'=>$course_result[0]['name'],
+            'chapter_question' => $chapter_result_temp,
+            'createtime' => date('Y-m-d H:i:s'),
+            'endtime' => $endtime
+        );
+        $code = 'k'.time();
+        $this->cache->memcached->save($code, $memory_data, $lasttime);
+
+        $url = site_url().'?sharecode='.$code;
+        $pass=array(
+            'errno' => 0,
+            'url'=>$url
+        );
+        echo json_encode($pass, JSON_UNESCAPED_UNICODE);
+    }
+    
+    /**
+     * 添加分享的课程，及对应题目和章节
+     * @param unknown $code
+     */
+    public function add_share($code)
+    {
+        $share_test = $this->cache->memcached->get($code);
+        $course_data = array(
+            'name' => trim($share_test['course_name']),
+            'unionid' => $_SESSION['unionid']
+        );
+        $course_id = $this->Course->insert_course_for_share($course_data);
+        foreach ($share_test["chapter_question"] as $chapter)
+        {
+            $chapter_data = array(
+                'name' => $chapter['name'],
+                'unionid'=>$_SESSION['unionid'],
+                'course_id' => $course_id
+            );
+            $chapter_id = $this->Chapter->insert_chapter_for_share($chapter_data);
+            $question= array();
+            if (!empty($chapter["question"])){
+            foreach ($chapter["question"] as $question_temp)
+            {
+                $question_temp['chapter_id'] = $chapter_id;
+                $question_temp['unionid'] = $_SESSION['unionid'];
+                $question[] = $question_temp;
+            }
+            $this->Question->insert_question_for_share($question);
+            }
+        }
+        redirect(site_url("Course/query_course"));
+    }
+    
 }
 
 ?>

@@ -65,9 +65,16 @@ class Welcome extends CI_Controller {
 	            $pass = $share_detail;
 	            $pass['nickname'] = $_SESSION['nickname'];
 	            $pass['code'] = $code;
-	            $this->load->view('templates/shareheader');
-	            $this->load->view('sharepage',$pass);
-	            $this->load->view('templates/footer');
+	            if (substr($code, 0,1)=='k')
+	            {
+	                $this->load->view('templates/shareheader');
+	                $this->load->view('sharepageforcourse',$pass);
+	                $this->load->view('templates/footer');
+	            } else {
+	                $this->load->view('templates/shareheader');
+	                $this->load->view('sharepage',$pass);
+	                $this->load->view('templates/footer');
+	            }
 	        } else {
 	            $head = array('sidebar'=>1);
 	            $this->load->view('templates/header',$head);

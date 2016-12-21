@@ -13,6 +13,11 @@
               <div class="box box-success box-solid">
                 <div class="box-header with-border">
                   <h3 class="box-title"><?php echo $num+1?>. 提取码<?php echo $item['accesscode']?></h3>
+                  <div class="pull-right" style="padding-right: 35px;">
+                        <div class="btn-group">
+                         <button type="button" class="btn btn-default" attr="<?php echo $item['accesscode']?>" id="delete"><i class="fa fa-trash"></i></button>
+                        </div>
+                      </div>
                   <div class="box-tools pull-right">
                     <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                   </div><!-- /.box-tools -->
@@ -52,4 +57,29 @@
  </div>
 </section>
       </div>
+            <script>
+      $(document).ready(function(){
+
+    	  $("button#delete").on("click",function(event){
+    		  var id = $(event.currentTarget).attr("attr");
+    		  if(confirm("您确定删除该试卷记录吗？删除后对应学生情况和题目正确率会一并清除！")){
+    		  $.ajax({
+                  type: 'POST',
+                  url: "<?php echo site_url('Testpaper/delete_accesscode')?>",
+                  data:{
+                      accesscode:id,
+                      },
+                      success: function (data) {
+                      if (data.errno!==0) {
+                          alert(data.error);
+                          return false;
+                      }
+                      $(event.currentTarget).parent().parent().parent().parent().parent().fadeOut();
+                  },
+                  dataType: 'json'
+              });
+    		  }     
+    	});
+      });
       
+      </script>

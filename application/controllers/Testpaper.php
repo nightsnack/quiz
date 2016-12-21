@@ -1,10 +1,4 @@
 <?php
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:GET, POST,PUT, OPTIONS, DELETE');
-header("Content-type: text/html;charset=utf-8");
-header("Access-Control-Allow-Credentials: true");
-header('Access-Control-Allow-Headers: X-Requested-With');
-header('Access-Control-Allow-Headers: Content-Type');
 
 class Testpaper extends CI_Controller
 {
@@ -27,12 +21,7 @@ class Testpaper extends CI_Controller
     private function checklogin()
     {
         if (!isset($_SESSION['unionid'])) {
-            $data = array(
-                'errno' => 101,
-                'error' => '请先登录'
-            );
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);
-            die();
+              redirect(site_url('User/show_login'));
         }
     }
 
@@ -44,6 +33,8 @@ class Testpaper extends CI_Controller
         $lasttime = floor((strtotime($endtime) - strtotime("now")));
         if ($lasttime < 0)
             die('{"errno":103,"error":"时间错误"}');
+        if ($lasttime > 2592000)
+            die('{"errno":103,"error":"时间不得超过30天"}');
         if (empty($chapter_id))
             die('{"errno":103,"error":"请将信息填写完整！"}');
         
@@ -71,7 +62,7 @@ class Testpaper extends CI_Controller
         
         while ($this->cache->memcached->get($code))
             $code = substr(time(), - 8);
-        
+                
         $this->cache->memcached->save($code, $memory_data, $lasttime);
         $accesscode_data = [
             'accesscode'=>$code,
@@ -80,13 +71,41 @@ class Testpaper extends CI_Controller
             'end_time' => $endtime
         ];
         $this->Accesscode->insert_accesscode($accesscode_data);
-//         $testpaper = $this->cache->memcached->get($code);
-        
+//          $testpaper = $this->cache->memcached->get($code);
         $data = array(
             'errno' => 0,
             'accesscode' => $code
         );
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+    
+    public function delete_accesscode()
+    {
+        $accesscode = $this->input->post('accesscode');
+        
+        $chapter_id = $this->Accesscode->code_to_chapter_id($accesscode);
+        if (empty($chapter_id))
+            die('{"errno":101,"error":"删除失败！"}');
+        $result = $this->Chapter->query_one_chapter($chapter_id[0]['chapter_id']);
+        if ($result) {
+            if ($result[0]['unionid'] !== $_SESSION['unionid'])
+                die('{"errno":105,"error":"非法进入！"}');
+        }
+        
+        if($this->Accesscode->delete_accesscode($accesscode)){
+        $pass=array(
+            'errno' => 0,
+            'error'=>"删除成功"
+        );
+        }
+        else {
+            $pass=array(
+                'errno' => 101,
+                'error'=>"删除失败"
+            );
+        }
+        echo json_encode($pass, JSON_UNESCAPED_UNICODE);
+        
     }
     
     public function share_question()
@@ -144,6 +163,7 @@ class Testpaper extends CI_Controller
         );
         $chapter_id = $this->Chapter->insert_chapter_for_share($chapter_data);
         $temp = array();
+        if(!empty($share_test['question'])) {
         foreach ($share_test['question'] as $question)
         {
             $question['chapter_id'] = $chapter_id;
@@ -151,6 +171,7 @@ class Testpaper extends CI_Controller
             $temp[] = $question;
         }
         $this->Question->insert_question_for_share($temp);
+        }
         redirect(site_url("Question/query_question/$chapter_id"));
     }
     

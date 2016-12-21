@@ -28,6 +28,14 @@ class AccessCodeModel extends CI_Model
         return $this->db->affected_rows();
     }
     
+    public function delete_accesscode($accesscode)
+    {
+        $this->db->delete($this->table, array(
+            'accesscode' => $accesscode
+        ));
+        return $this->db->affected_rows();
+    }
+    
     public function code_to_chapter_id($accesscode)
     {
         $this->db->select('chapter_id');

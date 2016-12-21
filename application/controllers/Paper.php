@@ -91,7 +91,7 @@ class Paper extends CI_Controller
 
         $accesscode= $this->input->post('accesscode');
         $as = $this->input->post('answer');
-$student_id = $this->input->post('student_id');
+        $student_id = $this->input->post('student_id');
         if (empty($accesscode)||empty($as))
             die('{"errno":103,"error":"请将信息填写完整！"}');
 
